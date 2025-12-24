@@ -1,55 +1,76 @@
-Device Life
-수많은 디바이스 중 유저에게 최적의 조합을 제공하다 UMC 9th Project - Team Device Life
+# 📱 Device Life
+> **"수많은 디바이스 중 유저에게 최적의 조합을 제공하다"**
+> UMC 9th Project - Team Device Life
 
-📖 프로젝트 소개 (Project Overview)
-Device Life는 사용자가 자신만의 전자기기 조합을 만들고, AI 기반의 실시간 평가를 통해 최적의 기기 생태계를 구성하도록 돕는 서비스입니다. 
+## 📖 Project Overview
+**Device Life**는 사용자가 자신만의 전자기기 조합을 만들고, AI 기반의 실시간 평가(호환성, 충전 편의성, 컬러 매칭)를 통해 최적의 기기 생태계를 구성하도록 돕는 웹 서비스입니다.
 
-✨ 핵심 기능 (Key Features)
-조합 워크스페이스: 기기 탐색을 통해 기기를 추가/삭제하고 나만의 조합을 구성 
+### ✨ Key Features
+* [cite_start]**조합 워크스페이스:** 기기 추가/삭제 및 실시간 조합 평가 [cite: 1, 2]
+* [cite_start]**기기 탐색:** 가격대(Range Slider), 카테고리, 브랜드별 기기 검색 [cite: 5, 6]
+* [cite_start]**라이프스타일 AI:** 사용자 용도와 취향을 반영한 맞춤형 평가 기준 설정 [cite: 15]
+* [cite_start]**내 조합 라이브러리:** 조합 저장, 비교, 관리(즐겨찾기, 휴지통) [cite: 7, 19]
 
-실시간 평가: 기기 변경 시마다 생태계 호환성, 충전 편의성, 컬러 매칭에 대한 점수와 요약을 즉시 제공 
+---
 
-기기 탐색 및 필터: 가격대 설정을 위한 레인지 슬라이더와 카테고리, 브랜드 필터를 통해 원하는 기기를 검색 
+## 🛠 Tech Stack
+| Part | Stack |
+| :--- | :--- |
+| **Frontend** | React (예정) |
+| **Backend** | Spring Boot / FastAPI (예정) |
+| **Database** | MySQL / PostgreSQL |
+| **Design** | Figma |
+| **Cooperation** | GitHub, Discord, Notion |
 
-라이프스타일 AI: 주된 용도와 선호 브랜드, 중요 요소(가성비, 휴대성 등)를 시각적으로 선택하여 맞춤형 평가 기준 설정 
+---
 
-내 조합 라이브러리: 저장된 조합을 관리하며, 스와이프 삭제 및 휴지통 복구 기능 제공 
+## 🤝 Collaboration Convention (협업 규칙)
 
+### 1. 🌿 Branch Strategy (브랜치 전략)
+저희 팀은 **Git Flow** 전략을 간소화하여 사용합니다.
 
+* **`main`**: 배포 단계에서만 사용하는 브랜치 (최종본)
+* **`develop`**: 개발 단계의 중심이 되는 브랜치 (모든 기능이 여기로 병합됨)
+* **`feature/*`**: 각 기능 단위 개발 브랜치
+  * 예시: `feature/login`, `feature/device-filter`
+* **`fix/*`**: 버그 수정 브랜치
+  * 예시: `fix/signup-error`
 
-🛠️ 기술 스택 (Tech Stack)
-Framework: 미정
+### 2. 💬 Commit Convention (커밋 메시지)
+**형식:** `[태그] 제목` (가능하면 영어 태그 + 한글 설명 권장)
 
-Language: 미정
+| 태그 (Tag) | 이모지 | 설명 | 예시 |
+| :--- | :---: | :--- | :--- |
+| `feat` | ✨ | 새로운 기능 추가 | `feat: 조합 생성 페이지 레이아웃 구현` |
+| `fix` | 🐛 | 버그 수정 | `fix: 기기 목록 로딩 에러 해결` |
+| `design` | 🎨 | UI/CSS 디자인 변경 | `design: 메인 컬러 팔레트 적용` |
+| `style` | 💄 | 코드 포맷팅 (로직 변경 X) | `style: 세미콜론 누락 수정` |
+| `refactor` | ♻️ | 코드 리팩토링 | `refactor: 평가 로직 함수 분리` |
+| `docs` | 📝 | 문서 수정 | `docs: README 컨벤션 업데이트` |
+| `chore` | 🔧 | 설정 파일 변경 | `chore: eslint 설정 업데이트` |
+| `rename` | 🚚 | 파일 이동/이름 변경 | `rename: user.js -> auth.js` |
+| `remove` | 🗑️ | 파일 삭제 | `remove: 미사용 이미지 삭제` |
 
-Styling: 미정
+### 3. 📂 Naming Convention (네이밍 규칙)
+* **File/Folder**: 
+    * FE: 컴포넌트는 `PascalCase` (ex: `DeviceCard.jsx`) / 함수는 `camelCase`
+    * BE: 클래스는 `PascalCase` / 변수, 함수는 `snake_case` (Python) or `camelCase` (Java)
+* **Variable**: 의미가 명확하게 전달되도록 작성 (ex: `a`, `b` (X) -> `deviceList`, `totalPrice` (O))
 
-Build Tool: 미정
+---
 
-Package Manager: 미정
+## 🚀 Work Flow (작업 순서)
+1. **Issue 생성**: 작업할 내용을 이슈 탭에 등록합니다. (Assignee, Label 설정)
+2. **Branch 생성**: `develop` 브랜치에서 `feature/기능명` 브랜치를 땁니다.
+3. **개발 진행**: 작업을 진행하고 컨벤션에 맞춰 커밋합니다.
+4. **PR 생성**: `feature` -> `develop` 으로 Pull Request를 보냅니다.
+    * PR 템플릿 내용을 꼼꼼히 작성합니다.
+5. **Code Review**: 팀원들의 리뷰를 받고, 승인(Approve) 시 Merge 합니다.
 
-🌐 Git-flow 전략 (Git-flow Strategy)
-main: 최종적으로 사용자에게 배포되는 가장 안정적인 버전 브랜치
+---
 
-develop: 다음 출시 버전을 개발하는 중심 브랜치. 기능 개발 완료 후 feature 브랜치들이 병합
-
-feature: 기능 개발용 브랜치. develop에서 분기하여 작업
-
-📌 브랜치 규칙 및 네이밍 (Branch Rules & Naming)
-모든 기능 개발은 feature 브랜치에서 시작
-
-작업 시작 전, 항상 최신 develop 내용 받아오기 (git pull origin develop)
-
-작업 완료 후, develop으로 Pull Request(PR) 생성
-
-PR에 Reviewer(멘션) 지정 이후 머지
-
-브랜치 이름 형식: feature/이슈번호-기능명
-
-예시: feature/1-login
-
-🎯 커밋 컨벤션 (Commit Convention)
-주의 사항
-type은 소문자만 사용 (feat, fix, refactor, docs, style, test, chore)
-
-subject는 모두 현재형 동사
+## 👨‍👩‍👧‍👦 Team Members
+* **PM**: 김준환 (초염몽)
+* **Frontend**: (이름/GitHub ID)
+* **Backend**: (이름/GitHub ID)
+* **Designer**: (이름)
