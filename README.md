@@ -1,16 +1,16 @@
-# 📱 Device Life
-> **"수많은 디바이스 중 유저에게 최적의 조합을 제공하다"**
-> UMC 9th Project - Team Device Life
+# Device Life - Backend
+> 수많은 디바이스 중 유저에게 최적의 조합을 제공하다
+> UMC 9th Project - Server Repository
 
-## 📖 Project Overview
-**Device Life**는 사용자가 자신만의 전자기기 조합을 만들고, AI 기반의 실시간 평가(호환성, 충전 편의성, 컬러 매칭)를 통해 최적의 기기 생태계를 구성하도록 돕는 웹 서비스입니다.
+## 📖 프로젝트 소개 (Project Overview)
+이 저장소는 Device Life의 API 서버 및 데이터베이스를 관리합니다. 기기 데이터 관리, 조합 저장 로직, 그리고 핵심 기능인 '실시간 호환성 평가 알고리즘' 처리를 담당합니다.
 
-### ✨ 핵심 기능 (Key Features)
-* [cite_start]조합 생성 및 실시간 평가: 기기 탐색을 통해 기기를 추가/삭제하고 나만의 조합을 구성 [cite: 1]
-* [cite_start]실시간 평가: 기기 변경 시마다 생태계 호환성, 충전 편의성, 컬러 매칭에 대한 점수와 요약을 즉시 제공 [cite: 2]
-* [cite_start]기기 탐색 및 필터: 가격대 설정을 위한 레인지 슬라이더와 카테고리, 브랜드 필터를 통해 원하는 기기를 검색 [cite: 5, 6]
-* [cite_start]라이프스타일 AI: 주된 용도와 선호 브랜드, 중요 요소(가성비, 휴대성 등)를 시각적으로 선택하여 맞춤형 평가 기준 설정 [cite: 15, 17]
-* [cite_start]내 조합 라이브러리: 저장된 조합을 관리하며, 스와이프 삭제 및 휴지통 복구 기능 제공 [cite: 7, 9, 19]
+### ✨ 백엔드 핵심 기능 (Key Features)
+* RESTful API 설계: 클라이언트와 데이터를 주고받기 위한 명세 기반 API 구현
+* 평가 알고리즘 로직: 기기 조합에 따른 생태계 점수, 충전 호환성, 컬러 매칭 산식 구현
+* 데이터베이스 구축: 스마트폰, 노트북 등 방대한 기기 정보 및 브랜드 데이터 모델링
+* 사용자 데이터 관리: 유저별 조합 저장, 즐겨찾기, 휴지통(Soft Delete) 기능 처리
+* 라이프스타일 가중치: 사용자 입력 데이터에 따라 평가 점수를 보정하는 로직 처리
 
 ---
 
@@ -18,9 +18,9 @@
 
 * Framework: 미정
 * Language: 미정
-* Styling: 미정
-* Build Tool: 미정
-* Package Manager: 미정
+* Database: 미정
+* ORM: 미정
+* Infra/Deploy: 미정
 
 ---
 
@@ -39,7 +39,7 @@
 * 작업 완료 후, develop으로 Pull Request(PR) 생성
 * PR에 Reviewer(멘션) 지정 이후 머지
 * 브랜치 이름 형식: feature/이슈번호-기능명
-* 예시: feature/1-login
+* 예시: feature/2-combination-api
 
 ---
 
