@@ -16,11 +16,12 @@
 
 ## 🛠️ 기술 스택 (Tech Stack)
 
-* Framework: 미정
-* Language: 미정
-* Database: 미정
-* ORM: 미정
-* Infra/Deploy: 미정
+Backend : Spring Boot
+Database : MySQL (필요 시 NoSQL 추가)
+Infra : AWS / Docker / Nginx
+Collaboration : GitHub / GitHub Actions
+API Docs : Swagger
+Async / Cache : 필요 시 Redis / Message Queue 추가
 
 ---
 
