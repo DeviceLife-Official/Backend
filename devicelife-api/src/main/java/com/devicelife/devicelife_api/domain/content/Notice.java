@@ -1,0 +1,38 @@
+package com.devicelife.devicelife_api.domain.content;
+
+import com.devicelife.devicelife_api.domain.common.BaseTimeEntity;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "notices")
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Notice extends BaseTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "noticeId")
+    private Long noticeId;
+
+    @Column(name = "title", length = 200, nullable = false)
+    private String title;
+
+    @Column(name = "body", nullable = false, columnDefinition = "TEXT")
+    private String body;
+
+    @Column(name = "isPublished", nullable = false)
+    @Builder.Default
+    private boolean isPublished = false;
+
+    @Column(name = "publishedAt")
+    private LocalDateTime publishedAt;
+}
+
