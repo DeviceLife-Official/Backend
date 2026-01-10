@@ -18,11 +18,15 @@ public enum SuccessCode {
     DEVICE_2001("DEVICE_2001", "디바이스 목록 조회에 성공했습니다."),
     DEVICE_2002("DEVICE_2002", "디바이스 상세 조회에 성공했습니다."),
 
-    // 예시: 콤보
-    COMBO_2001("COMBO_2001", "콤보 생성에 성공했습니다."),
-    COMBO_2002("COMBO_2002", "콤보 조회에 성공했습니다."),
-    COMBO_2003("COMBO_2003", "콤보 수정에 성공했습니다."),
-    COMBO_2004("COMBO_2004", "콤보 삭제에 성공했습니다.");
+    COMBO_CREATE_SUCCESS("COMBO_2000", "조합 생성에 성공했습니다."),
+
+    TAG_GET_SUCCESS("TAG_2000", "태그 목록 조회에 성공했습니다."),
+    TAG_SAVE_SUCCESS("TAG_2001", "유저 태그 저장에 성공했습니다."),
+
+    ONBOARDING_COMPLETE_SUCCESS("ONBOARDING_2000", "온보딩 완료 처리에 성공했습니다."),
+
+    LIFESTYLE_GET_SUCCESS("LIFESTYLE_2000", "라이프스타일 추천 조회에 성공했습니다.");
+
 
     private final String code;
     private final String message;
