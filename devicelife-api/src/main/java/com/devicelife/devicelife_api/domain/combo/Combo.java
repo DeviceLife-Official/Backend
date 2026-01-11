@@ -71,5 +71,74 @@ public class Combo extends BaseTimeEntity {
 
     @Column(name = "deletedAt")
     private LocalDateTime deletedAt;
+
+    // 비즈니스 로직 메서드
+
+    /**
+     * 조합명 수정
+     */
+    public void updateComboName(String comboName) {
+        this.comboName = comboName;
+    }
+
+    /**
+     * 소프트 삭제 (휴지통으로 이동)
+     */
+    public void softDelete() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 복구 (휴지통에서 복원)
+     */
+    public void restore() {
+        this.deletedAt = null;
+    }
+
+    /**
+     * 즐겨찾기 토글
+     */
+    public void togglePin() {
+        if (this.pinnedAt == null) {
+            this.pinnedAt = LocalDateTime.now();
+        } else {
+            this.pinnedAt = null;
+        }
+    }
+
+    /**
+     * 즐겨찾기 설정
+     */
+    public void pin() {
+        this.pinnedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 즐겨찾기 해제
+     */
+    public void unpin() {
+        this.pinnedAt = null;
+    }
+
+    /**
+     * 총 가격 업데이트
+     */
+    public void updateTotalPrice(Integer totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    /**
+     * 삭제 여부 확인
+     */
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
+
+    /**
+     * 즐겨찾기 여부 확인
+     */
+    public boolean isPinned() {
+        return this.pinnedAt != null;
+    }
 }
 
