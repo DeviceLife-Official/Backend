@@ -122,7 +122,7 @@ public class ComboService {
     }
 
     /**
-     * 조합명 수정 (조합명 변경)
+     * 조합 수정 (조합명 변경)
      */
     @Transactional
     public ComboDetailResponseDto updateCombo(Long comboId, ComboUpdateRequestDto request) {

@@ -151,7 +151,7 @@ public class ComboController {
     }
 
     @Operation(
-            summary = "조합명 수정",
+            summary = "조합 수정",
             description = """
             조합명(comboName)을 수정한다.
             """
