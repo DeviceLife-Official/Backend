@@ -40,5 +40,8 @@ public class User extends BaseTimeEntity {
     @Column(name = "onboardingCompleted", nullable = false)
     @Builder.Default
     private boolean onboardingCompleted = false;
+
+    @Column(name = "phoneNumber", nullable = false)
+    private String phoneNumber;
 }
 
