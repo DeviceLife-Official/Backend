@@ -18,7 +18,19 @@ public enum SuccessCode {
     DEVICE_2001("DEVICE_2001", "디바이스 목록 조회에 성공했습니다."),
     DEVICE_2002("DEVICE_2002", "디바이스 상세 조회에 성공했습니다."),
 
+    // Combo
     COMBO_CREATE_SUCCESS("COMBO_2000", "조합 생성에 성공했습니다."),
+    COMBO_GET_SUCCESS("COMBO_2001", "조합 조회에 성공했습니다."),
+    COMBO_LIST_SUCCESS("COMBO_2002", "조합 목록 조회에 성공했습니다."),
+    COMBO_UPDATE_SUCCESS("COMBO_2003", "조합 수정에 성공했습니다."),
+    COMBO_DELETE_SUCCESS("COMBO_2004", "조합 삭제에 성공했습니다."),
+    COMBO_RESTORE_SUCCESS("COMBO_2005", "조합 복구에 성공했습니다."),
+    COMBO_PERMANENT_DELETE_SUCCESS("COMBO_2006", "조합 영구 삭제에 성공했습니다."),
+    COMBO_PIN_SUCCESS("COMBO_2007", "조합 즐겨찾기에 성공했습니다."),
+    COMBO_UNPIN_SUCCESS("COMBO_2008", "조합 즐겨찾기 해제에 성공했습니다."),
+    COMBO_DEVICE_ADD_SUCCESS("COMBO_2009", "조합에 기기 추가에 성공했습니다."),
+    COMBO_DEVICE_REMOVE_SUCCESS("COMBO_2010", "조합에서 기기 삭제에 성공했습니다."),
+    COMBO_TRASH_LIST_SUCCESS("COMBO_2011", "휴지통 목록 조회에 성공했습니다."),
 
     TAG_GET_SUCCESS("TAG_2000", "태그 목록 조회에 성공했습니다."),
     TAG_SAVE_SUCCESS("TAG_2001", "유저 태그 저장에 성공했습니다."),
