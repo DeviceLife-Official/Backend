@@ -1,0 +1,2 @@
+ALTER TABLE devicelife.users
+ADD COLUMN phoneNumber VARCHAR(20) NOT NULL DEFAULT '';

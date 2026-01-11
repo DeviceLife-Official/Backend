@@ -18,6 +18,12 @@ spring:
   flyway:
     enabled: true
 
+jwt:
+  token:
+    secretKey: ${JWT_SECRET_KEY}
+    expiration:
+      access: 14400000
+
 server:
   port: 8080
 
