@@ -3,7 +3,7 @@ spring:
     import: optional:file:./devicelife-api/.env[.properties]
 
   datasource:
-    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=true&requireSSL=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -23,3 +23,9 @@ server:
 
 internal:
   admin-token: ${INTERNAL_ADMIN_TOKEN:}
+
+discord:
+  bot-token: ${DISCORD_BOT_TOKEN:}
+  guild-id: ${DISCORD_GUILD_ID:}
+  admin-role-name: ${DISCORD_ADMIN_ROLE:admin}
+

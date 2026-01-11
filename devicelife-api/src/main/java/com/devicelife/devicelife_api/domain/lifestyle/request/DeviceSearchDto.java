@@ -7,5 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class DeviceSearchDto {
     private Long deviceId;
-    private String displayName; // brand + model
+    private String modelName;
 }
