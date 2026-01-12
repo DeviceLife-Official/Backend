@@ -37,7 +37,14 @@ public enum SuccessCode {
 
     ONBOARDING_COMPLETE_SUCCESS("ONBOARDING_2000", "온보딩 완료 처리에 성공했습니다."),
 
-    LIFESTYLE_GET_SUCCESS("LIFESTYLE_2000", "라이프스타일 추천 조회에 성공했습니다.");
+    LIFESTYLE_GET_SUCCESS("LIFESTYLE_2000", "라이프스타일 추천 조회에 성공했습니다."),
+
+    NOTICE_CREATE_SUCCESS("NOTICE_2000", "공지 생성에 성공했습니다."),
+    NOTICE_GET_SUCCESS("NOTICE_2001", "공지 조회에 성공했습니다."),
+    NOTICE_LIST_SUCCESS("NOTICE_2002", "공지 목록 조회에 성공했습니다."),
+    NOTICE_UPDATE_SUCCESS("NOTICE_2003", "공지 수정에 성공했습니다."),
+    NOTICE_DELETE_SUCCESS("NOTICE_2004", "공지 삭제에 성공했습니다."),
+    ;
 
 
     private final String code;
