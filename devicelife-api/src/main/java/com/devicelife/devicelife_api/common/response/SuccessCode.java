@@ -49,6 +49,12 @@ public enum SuccessCode {
     FAQ_GET_SUCCESS("FAQ_2001", "FAQ 조회에 성공했습니다."),
     FAQ_UPDATE_SUCCESS("FAQ_2002", "FAQ 수정에 성공했습니다."),
     FAQ_DELETE_SUCCESS("FAQ_2003", "FAQ 삭제에 성공했습니다."),
+
+    POLICY_CREATE_SUCCESS("POLICY_2000", "약관 생성에 성공했습니다."),
+    POLICY_GET_SUCCESS("POLICY_2001", "약관 조회에 성공했습니다."),
+    POLICY_LIST_SUCCESS("POLICY_2002", "약관 목록 조회에 성공했습니다."),
+    POLICY_UPDATE_SUCCESS("POLICY_2003", "약관 수정에 성공했습니다."),
+    POLICY_DELETE_SUCCESS("POLICY_2004", "약관 삭제에 성공했습니다."),
     ;
 
 

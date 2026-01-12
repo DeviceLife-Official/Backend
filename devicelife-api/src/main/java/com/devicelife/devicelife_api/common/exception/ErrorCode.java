@@ -45,6 +45,9 @@ public enum ErrorCode {
 
     // Faq 관련 오류(FAQ_XXXX)
     FAQ_4041("FAQ_4041", 404, "FAQ를 찾을 수 없습니다."),
+
+    // Policy 관련 오류(POLICY_XXXX)
+    POLICY_4041("POLICY_4041", 404, "약관을 찾을 수 없습니다."),
     ;
 
     private final String code;
