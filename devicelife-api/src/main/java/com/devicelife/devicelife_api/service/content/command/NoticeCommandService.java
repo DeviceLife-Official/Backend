@@ -20,7 +20,7 @@ public class NoticeCommandService {
     private final NoticeRepository noticeRepository;
 
     public NoticeDetailResponseDto createNotice(NoticeSaveRequestDto request) {
-        boolean isPublished = request.getIsPublished();
+        boolean isPublished = request.getIsPublished() != null ? request.getIsPublished() : false;
 
         Notice notice = Notice.builder()
                 .title(request.getTitle())
@@ -38,7 +38,8 @@ public class NoticeCommandService {
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOTICE_4041));
 
-        notice.update(request.getTitle(), request.getBody(), request.getIsPublished());
+        boolean isPublished = request.getIsPublished() != null ? request.getIsPublished() : false;
+        notice.update(request.getTitle(), request.getBody(), isPublished);
 
         return NoticeDetailResponseDto.from(notice);
     }

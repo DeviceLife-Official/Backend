@@ -44,6 +44,11 @@ public enum SuccessCode {
     NOTICE_LIST_SUCCESS("NOTICE_2002", "공지 목록 조회에 성공했습니다."),
     NOTICE_UPDATE_SUCCESS("NOTICE_2003", "공지 수정에 성공했습니다."),
     NOTICE_DELETE_SUCCESS("NOTICE_2004", "공지 삭제에 성공했습니다."),
+
+    FAQ_CREATE_SUCCESS("FAQ_2000", "FAQ 생성에 성공했습니다."),
+    FAQ_GET_SUCCESS("FAQ_2001", "FAQ 조회에 성공했습니다."),
+    FAQ_UPDATE_SUCCESS("FAQ_2002", "FAQ 수정에 성공했습니다."),
+    FAQ_DELETE_SUCCESS("FAQ_2003", "FAQ 삭제에 성공했습니다."),
     ;
 
 

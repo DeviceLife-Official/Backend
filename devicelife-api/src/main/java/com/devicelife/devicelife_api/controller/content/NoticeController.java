@@ -4,13 +4,12 @@ import com.devicelife.devicelife_api.common.response.ApiResponse;
 import com.devicelife.devicelife_api.common.response.SuccessCode;
 import com.devicelife.devicelife_api.domain.content.dto.req.NoticeSaveRequestDto;
 import com.devicelife.devicelife_api.domain.content.dto.res.NoticeDetailResponseDto;
-import com.devicelife.devicelife_api.domain.content.dto.res.NoticeResponseDto;
+import com.devicelife.devicelife_api.domain.content.dto.res.NoticeListDto;
 import com.devicelife.devicelife_api.service.content.command.NoticeCommandService;
 import com.devicelife.devicelife_api.service.content.query.NoticeQueryService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -24,9 +23,11 @@ public class NoticeController implements NoticeControllerDocs {
     private final NoticeQueryService noticeQueryService;
     private final NoticeCommandService noticeCommandService;
 
+    // TODO: 등록, 수정, 삭제는 admin만 가능하게 수정
+
     @Override
     @GetMapping
-    public ApiResponse<Page<NoticeResponseDto>> getNotices(
+    public ApiResponse<NoticeListDto> getNotices(
             @RequestParam(required = false, defaultValue = "true") Boolean isPublished,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {

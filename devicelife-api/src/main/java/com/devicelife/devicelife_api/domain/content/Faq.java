@@ -32,5 +32,12 @@ public class Faq {
     @Column(name = "isPublished", nullable = false)
     @Builder.Default
     private boolean isPublished = false;
+
+    public void update(String question, String answer, Integer sortOrder, boolean isPublished) {
+        this.question = question;
+        this.answer = answer;
+        this.sortOrder = sortOrder;
+        this.isPublished = isPublished;
+    }
 }
 

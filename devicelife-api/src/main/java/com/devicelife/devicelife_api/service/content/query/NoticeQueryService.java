@@ -4,6 +4,7 @@ import com.devicelife.devicelife_api.common.exception.CustomException;
 import com.devicelife.devicelife_api.common.exception.ErrorCode;
 import com.devicelife.devicelife_api.domain.content.Notice;
 import com.devicelife.devicelife_api.domain.content.dto.res.NoticeDetailResponseDto;
+import com.devicelife.devicelife_api.domain.content.dto.res.NoticeListDto;
 import com.devicelife.devicelife_api.domain.content.dto.res.NoticeResponseDto;
 import com.devicelife.devicelife_api.repository.content.NoticeRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,9 @@ public class NoticeQueryService {
 
     private final NoticeRepository noticeRepository;
 
-    public Page<NoticeResponseDto> getNotices(Boolean isPublished, Pageable pageable) {
+    public NoticeListDto getNotices(Boolean isPublished, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllByIsPublished(isPublished, pageable);
-        return notices.map(NoticeResponseDto::from);
+        return NoticeListDto.of(notices);
     }
 
     public NoticeDetailResponseDto getNoticeById(Long noticeId) {

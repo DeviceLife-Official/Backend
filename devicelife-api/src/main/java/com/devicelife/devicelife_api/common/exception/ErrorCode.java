@@ -41,7 +41,10 @@ public enum ErrorCode {
     SERVER_5031("SERVER_5031", 503, "서버가 일시적으로 불안정합니다"),
 
     // Notice 관련 오류 (NOTICE_XXXX)
-    NOTICE_4041("NOTICE_4041", 404, "공지를 찾을 수 없습니다.")
+    NOTICE_4041("NOTICE_4041", 404, "공지를 찾을 수 없습니다."),
+
+    // Faq 관련 오류(FAQ_XXXX)
+    FAQ_4041("FAQ_4041", 404, "FAQ를 찾을 수 없습니다."),
     ;
 
     private final String code;

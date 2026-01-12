@@ -8,14 +8,16 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class NoticeSaveRequestDto {
+public class FaqSaveRequestDto {
 
-    @NotBlank(message = "제목은 필수입니다.")
-    @Size(max = 200, message = "제목은 200자 이하여야 합니다.")
-    private String title;
+    @NotBlank(message = "질문은 필수입니다.")
+    @Size(max = 255, message = "질문은 255자 이하여야 합니다.")
+    private String question;
 
-    @NotBlank(message = "본문은 필수입니다.")
-    private String body;
+    @NotBlank(message = "답변은 필수입니다.")
+    private String answer;
+
+    private Integer sortOrder;
 
     private Boolean isPublished;
 }

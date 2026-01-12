@@ -3,7 +3,7 @@ package com.devicelife.devicelife_api.controller.content;
 import com.devicelife.devicelife_api.common.response.ApiResponse;
 import com.devicelife.devicelife_api.domain.content.dto.req.NoticeSaveRequestDto;
 import com.devicelife.devicelife_api.domain.content.dto.res.NoticeDetailResponseDto;
-import com.devicelife.devicelife_api.domain.content.dto.res.NoticeResponseDto;
+import com.devicelife.devicelife_api.domain.content.dto.res.NoticeListDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Tag(
         name = "Notice",
         description = """
-        공지사항 API.
+        공지사항 API
         """
 )
 public interface NoticeControllerDocs {
@@ -33,24 +32,35 @@ public interface NoticeControllerDocs {
             description = """
             공지사항 목록을 페이징하여 조회합니다.
 
+            **요청 파라미터:**
             - isPublished: 게시 여부 필터 (기본값: true)
-            - sort: 정렬 기준 (기본값: createdAt,desc)
-            - page: 페이지 번호 (기본값: 0)
+            - page: 페이지 번호, 0부터 시작 (기본값: 0)
             - size: 페이지 크기 (기본값: 20)
+            - sort: 정렬 기준 (기본값: createdAt,desc)
+
+            **응답 구조 (NoticeListDto):**
+            - notices: 공지사항 목록 (NoticeResponseDto 배열)
+            - listSize: 현재 페이지의 요소 개수
+            - totalPage: 전체 페이지 수
+            - totalElements: 전체 공지사항 개수
+            - isFirst: 첫 페이지 여부
+            - isLast: 마지막 페이지 여부
 
             [프론트 참고]
             - 게시된 공지사항만 기본으로 조회됩니다.
             - 최신순으로 정렬되어 반환됩니다.
+            - **page는 0부터 시작합니다** (0: 첫 페이지, 1: 두 번째 페이지)
+            - 요청 예시: GET /api/notices?page=0&size=20&sort=createdAt,desc
             """
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
-                    description = "조회 성공 (ApiResponse.result에 Page<NoticeResponseDto> 반환)",
+                    description = "조회 성공 (ApiResponse.result에 NoticeListDto 반환)",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             )
     })
-    ApiResponse<Page<NoticeResponseDto>> getNotices(
+    ApiResponse<NoticeListDto> getNotices(
             @Parameter(
                     description = "게시 여부 필터 (true: 게시됨, false: 비공개)",
                     example = "true",
