@@ -2,6 +2,7 @@ package com.devicelife.devicelife_api.controller.onboarding;
 
 import com.devicelife.devicelife_api.common.response.ApiResponse;
 import com.devicelife.devicelife_api.common.response.SuccessCode;
+import com.devicelife.devicelife_api.common.security.CustomUserDetails;
 import com.devicelife.devicelife_api.domain.onboarding.dto.request.OnboardingCompleteRequestDto;
 import com.devicelife.devicelife_api.service.onboarding.OnboardingService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,10 +36,6 @@ public class OnboardingController {
             summary = "온보딩 완료 처리",
             description = """
             users.onboardingCompleted를 true로 설정한다.
-
-            [JWT 전환 예정]
-            - 현재: userId를 요청 바디로 받음
-            - 추후: JWT 인증 도입 시 userId는 토큰에서 추출하도록 변경
             """
     )
     @ApiResponses({
@@ -54,13 +52,13 @@ public class OnboardingController {
     })
     @PostMapping("/complete")
     public ResponseEntity<ApiResponse<Void>> complete(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    required = true,
-                    description = "userId는 임시(인증 도입 후 토큰에서 추출하도록 변경).",
-                    content = @Content(schema = @Schema(implementation = OnboardingCompleteRequestDto.class))
-            )
-            @Valid @RequestBody OnboardingCompleteRequestDto request) {
-        onboardingService.complete(request);
+            //@io.swagger.v3.oas.annotations.parameters.RequestBody(
+            //        required = true,
+            //        description = "userId는 임시(인증 도입 후 토큰에서 추출하도록 변경).",
+            //        content = @Content(schema = @Schema(implementation = OnboardingCompleteRequestDto.class))
+            //)
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        onboardingService.complete(customUserDetails);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.ONBOARDING_COMPLETE_SUCCESS.getCode(),

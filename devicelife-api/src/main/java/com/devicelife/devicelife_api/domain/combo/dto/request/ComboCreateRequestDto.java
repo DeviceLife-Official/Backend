@@ -8,8 +8,9 @@ import lombok.Getter;
 @Getter
 public class ComboCreateRequestDto {
 
-    @NotNull
-    private Long userId;
+    //JWT 도입 완료하여 주석처리
+    //@NotNull
+    //private Long userId;
 
     @NotBlank
     @Size(max = 80)

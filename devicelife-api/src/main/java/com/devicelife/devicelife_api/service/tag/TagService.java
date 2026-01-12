@@ -1,5 +1,6 @@
 package com.devicelife.devicelife_api.service.tag;
 
+import com.devicelife.devicelife_api.common.security.CustomUserDetails;
 import com.devicelife.devicelife_api.domain.device.Tag;
 import com.devicelife.devicelife_api.domain.device.dto.request.UserTagRequestDto;
 import com.devicelife.devicelife_api.domain.device.dto.response.TagResponseDto;
@@ -43,8 +44,8 @@ public class TagService {
     }
 
     @Transactional
-    public void saveUserTags(UserTagRequestDto request) {
-        Long userId = request.getUserId();
+    public void saveUserTags(UserTagRequestDto request, CustomUserDetails cud) {
+        Long userId = cud.getId();
 
         User user = em.find(User.class, userId);
         if (user == null) {
