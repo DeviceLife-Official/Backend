@@ -2,6 +2,8 @@ package com.devicelife.devicelife_api.common.config;
 
 import com.devicelife.devicelife_api.common.security.JwtAuthFilter;
 import com.devicelife.devicelife_api.common.security.JwtUtil;
+import com.devicelife.devicelife_api.common.security.oauth2.OAuth2SuccessHandler;
+import com.devicelife.devicelife_api.common.security.oauth2.OAuth2UserProviderRouter;
 import com.devicelife.devicelife_api.service.auth.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +24,8 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
+    private final OAuth2UserProviderRouter oAuth2UserProviderRouter;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

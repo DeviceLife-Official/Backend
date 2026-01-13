@@ -17,7 +17,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "userId")
     private Long userId;
 
-    @Column(name = "username", length = 30, unique = true)
+    @Column(name = "username", length = 30/*, unique = true*/)
     private String username;
 
     @Column(name = "passwordHash", length = 255)
@@ -38,7 +38,7 @@ public class User extends BaseTimeEntity {
     @Builder.Default
     private boolean onboardingCompleted = false;
 
-    @Column(name = "phoneNumber", nullable = false)
+    @Column(name = "phoneNumber")
     private String phoneNumber;
 
     @Setter
@@ -47,6 +47,7 @@ public class User extends BaseTimeEntity {
     @Builder.Default
     private AuthProvider provider = AuthProvider.GENERAL;
 
+    @Setter
     @Column(name = "providerId")
     private String providerId;
 }
