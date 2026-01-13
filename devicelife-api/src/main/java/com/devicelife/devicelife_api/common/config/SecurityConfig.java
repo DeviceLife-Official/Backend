@@ -6,6 +6,7 @@ import com.devicelife.devicelife_api.service.auth.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -39,6 +40,13 @@ public class SecurityConfig {
                         //.requestMatchers("/api/combos/**").hasRole("USER")
                         .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated()
+                )
+
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(oAuth2UserProviderRouter) // 사용자 정보 받아오기
+                        )
+                        .successHandler(oAuth2SuccessHandler) // JWT 발급 및 응답
                 )
 
                 .logout(logout -> logout
