@@ -36,5 +36,23 @@ public class Policy {
     @Column(name = "isActive", nullable = false)
     @Builder.Default
     private boolean isActive = false;
+
+    public void update(String policyType, String version, String body, boolean isActive) {
+        this.policyType = policyType;
+        this.version = version;
+        this.body = body;
+
+        // 활성화 여부가 false -> true로 변경될 때만 publishedAt 설정
+        if (!this.isActive && isActive) {
+            this.publishedAt = LocalDateTime.now();
+        }
+
+        // 활성화 여부가 true -> false로 변경될 때 publishedAt을 null로
+        if (this.isActive && !isActive) {
+            this.publishedAt = null;
+        }
+
+        this.isActive = isActive;
+    }
 }
 

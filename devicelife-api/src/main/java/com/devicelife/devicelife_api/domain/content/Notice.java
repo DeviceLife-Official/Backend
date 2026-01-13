@@ -34,5 +34,22 @@ public class Notice extends BaseTimeEntity {
 
     @Column(name = "publishedAt")
     private LocalDateTime publishedAt;
+
+    public void update(String title, String body, boolean isPublished) {
+        this.title = title;
+        this.body = body;
+
+        // 게시 상태가 false -> true로 변경될 때만 publishedAt 설정
+        if (!this.isPublished && isPublished) {
+            this.publishedAt = LocalDateTime.now();
+        }
+
+        // 게시 상태가 true -> false로 변경될 때 publishedAt을 null로
+        if (this.isPublished && !isPublished) {
+            this.publishedAt = null;
+        }
+
+        this.isPublished = isPublished;
+    }
 }
 
