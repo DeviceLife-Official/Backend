@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,8 +23,6 @@ public class NoticeController implements NoticeControllerDocs {
 
     private final NoticeQueryService noticeQueryService;
     private final NoticeCommandService noticeCommandService;
-
-    // TODO: 등록, 수정, 삭제는 admin만 가능하게 수정
 
     @Override
     @GetMapping
@@ -51,6 +50,7 @@ public class NoticeController implements NoticeControllerDocs {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     @PostMapping
     public ApiResponse<NoticeDetailResponseDto> createNotice(
@@ -63,6 +63,7 @@ public class NoticeController implements NoticeControllerDocs {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     @PutMapping("/{noticeId}")
     public ApiResponse<NoticeDetailResponseDto> updateNotice(
@@ -76,6 +77,7 @@ public class NoticeController implements NoticeControllerDocs {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     @DeleteMapping("/{noticeId}")
     public ApiResponse<Void> deleteNotice(

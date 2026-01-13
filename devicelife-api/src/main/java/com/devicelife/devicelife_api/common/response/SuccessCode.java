@@ -55,6 +55,12 @@ public enum SuccessCode {
     POLICY_LIST_SUCCESS("POLICY_2002", "약관 목록 조회에 성공했습니다."),
     POLICY_UPDATE_SUCCESS("POLICY_2003", "약관 수정에 성공했습니다."),
     POLICY_DELETE_SUCCESS("POLICY_2004", "약관 삭제에 성공했습니다."),
+
+    INQUIRY_CREATE_SUCCESS("INQUIRY_2000", "문의 생성에 성공했습니다."),
+    INQUIRY_GET_SUCCESS("INQUIRY_2001", "문의 조회에 성공했습니다."),
+    INQUIRY_LIST_SUCCESS("INQUIRY_2002", "문의 목록 조회에 성공했습니다."),
+    INQUIRY_STATUS_CHANGE_SUCCESS("INQUIRY_2003", "문의 상태 변경에 성공했습니다."),
+    INQUIRY_DELETE_SUCCESS("INQUIRY_2004", "문의 삭제에 성공했습니다."),
     ;
 
 

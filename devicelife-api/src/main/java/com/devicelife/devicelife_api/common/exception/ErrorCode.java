@@ -48,6 +48,9 @@ public enum ErrorCode {
 
     // Policy 관련 오류(POLICY_XXXX)
     POLICY_4041("POLICY_4041", 404, "약관을 찾을 수 없습니다."),
+
+    // Inquiry 관련 오류(INQUIRY_XXXX)
+    INQUIRY_4041("INQUIRY_4041", 404, "문의를 찾을 수 없습니다."),
     ;
 
     private final String code;

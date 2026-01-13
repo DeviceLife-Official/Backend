@@ -9,6 +9,7 @@ import com.devicelife.devicelife_api.service.content.query.FaqQueryService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,8 +22,7 @@ public class FaqController implements FaqControllerDocs {
     private final FaqCommandService faqCommandService;
     private final FaqQueryService faqQueryService;
 
-    // TODO: 등록, 수정, 삭제는 admin만 가능하게 수정
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     @PostMapping
     public ApiResponse<FaqResponseDto> createFaq(
@@ -47,6 +47,7 @@ public class FaqController implements FaqControllerDocs {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     @PutMapping("/{faqId}")
     public ApiResponse<FaqResponseDto> updateFaq(
@@ -60,6 +61,7 @@ public class FaqController implements FaqControllerDocs {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     @DeleteMapping("/{faqId}")
     public ApiResponse<Void> deleteFaq(

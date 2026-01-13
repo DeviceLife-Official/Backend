@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,8 +24,7 @@ public class PolicyController implements PolicyControllerDocs {
     private final PolicyCommandService policyCommandService;
     private final PolicyQueryService policyQueryService;
 
-    // TODO: 등록, 수정, 삭제는 admin만 가능하게 수정
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     @PostMapping
     public ApiResponse<PolicyDetailResponseDto> createPolicy(
@@ -37,6 +37,7 @@ public class PolicyController implements PolicyControllerDocs {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     @PutMapping("/{policyId}")
     public ApiResponse<PolicyDetailResponseDto> updatePolicy(
@@ -76,6 +77,7 @@ public class PolicyController implements PolicyControllerDocs {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     @DeleteMapping("/{policyId}")
     public ApiResponse<Void> deletePolicy(

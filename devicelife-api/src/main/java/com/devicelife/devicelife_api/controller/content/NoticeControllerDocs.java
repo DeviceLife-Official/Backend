@@ -113,7 +113,15 @@ public interface NoticeControllerDocs {
 
             - title: 제목 (필수, 200자 이하)
             - body: 본문 (필수)
-            - isPublished: 게시 여부 (필수, true/false)
+            - isPublished: 게시 여부 (선택, 기본값: false)
+
+            **publishedAt 자동 관리:**
+            - isPublished=true: publishedAt 현재 시간으로 설정
+            - isPublished=false: publishedAt=null
+
+            [프론트 참고]
+            - 보통 비공개(isPublished=false)로 등록 후, 검토 완료되면 수정 API로 게시합니다.
+            - isPublished를 보내지 않으면 자동으로 false가 설정됩니다.
             """
     )
     @ApiResponses({
