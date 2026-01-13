@@ -9,10 +9,13 @@ import lombok.Getter;
 @Getter
 public enum SuccessCode {
 
+    COMMON_2001("COMMON_2001", "요청 처리에 성공했습니다."),
+
     // 예시: 사용자
     USER_2001("USER_2001", "회원가입에 성공했습니다."),
     USER_2002("USER_2002", "로그인에 성공했습니다."),
     USER_2003("USER_2003", "사용자 정보 조회에 성공했습니다."),
+    USER_2004("USER_2004", "토큰 재발급에 성공했습니다."),
 
     // 예시: 디바이스
     DEVICE_2001("DEVICE_2001", "디바이스 목록 조회에 성공했습니다."),

@@ -21,19 +21,53 @@ public class JwtUtil {
 
     private final SecretKey secretKey;
     private final Duration accessExpiration;
+    private final Duration refreshExpiration;
 
     public JwtUtil(
             @Value("${jwt.token.secretKey}") String secret,
-            @Value("${jwt.token.expiration.access}") Long accessExpiration
+            @Value("${jwt.token.expiration.access}") Long accessExpiration,
+            @Value("${jwt.token.expiration.refresh}") Long refreshExpiration
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.accessExpiration = Duration.ofMillis(accessExpiration);
+        this.refreshExpiration = Duration.ofMillis(refreshExpiration);
     }
 
     // AccessToken 생성
     public String createAccessToken(CustomUserDetails user) {
-        return createToken(user, accessExpiration);
+        Instant now = Instant.now();
+
+        // 인가 정보
+        String authorities = user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        return Jwts.builder()
+                .subject(user.getUsername())
+                .claim("role", authorities)
+                .claim("email", user.getUsername())
+                .claim("type", "access_token")
+                .issuedAt(Date.from(now)) // 언제 발급한지
+                .expiration(Date.from(now.plus(accessExpiration))) // 언제까지 유효한지
+                .signWith(secretKey) // sign할 Key
+                .compact();
+
+        //return createToken(user, accessExpiration);
     }
+    // RefreshToken 생성
+    public String createRefreshToken(CustomUserDetails user) {
+        Instant now = Instant.now();
+
+        return Jwts.builder()
+                .subject(user.getUsername())
+                .claim("email", user.getUsername())
+                .claim("type", "refresh_token")
+                .issuedAt(Date.from(now)) // 언제 발급한지
+                .expiration(Date.from(now.plus(refreshExpiration))) // 언제까지 유효한지
+                .signWith(secretKey) // sign할 Key
+                .compact();
+    }
+
 
     /** 토큰에서 이메일 가져오기
      *
@@ -62,24 +96,7 @@ public class JwtUtil {
         }
     }
 
-    // 토큰 생성
-    private String createToken(CustomUserDetails user, Duration expiration) {
-        Instant now = Instant.now();
 
-        // 인가 정보
-        String authorities = user.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
-        return Jwts.builder()
-                .subject(user.getUsername()) // User 이메일을 Subject로
-                .claim("role", authorities)
-                .claim("email", user.getUsername())
-                .issuedAt(Date.from(now)) // 언제 발급한지
-                .expiration(Date.from(now.plus(expiration))) // 언제까지 유효한지
-                .signWith(secretKey) // sign할 Key
-                .compact();
-    }
 
     // 토큰 정보 가져오기
     private Jws<Claims> getClaims(String token) throws JwtException {
