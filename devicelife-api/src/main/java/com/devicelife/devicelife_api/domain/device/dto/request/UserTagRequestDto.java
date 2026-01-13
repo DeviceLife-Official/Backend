@@ -9,8 +9,9 @@ import java.util.List;
 @Getter
 public class UserTagRequestDto {
 
-    @NotNull
-    private Long userId;
+    //JWT 토큰 도입 완료하여 주석처리
+    //@NotNull
+    //private Long userId;
 
     @NotEmpty
     private List<Long> tagIds;
