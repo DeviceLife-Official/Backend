@@ -1,5 +1,6 @@
 package com.devicelife.devicelife_api.service.onboarding;
 
+import com.devicelife.devicelife_api.common.security.CustomUserDetails;
 import com.devicelife.devicelife_api.domain.onboarding.dto.request.OnboardingCompleteRequestDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,8 +15,8 @@ public class OnboardingService {
     private final EntityManager em;
 
     @Transactional
-    public void complete(OnboardingCompleteRequestDto request) {
-        Long userId = request.getUserId();
+    public void complete(CustomUserDetails cud) {
+        Long userId = cud.getId();
 
         int updated = em.createQuery(
                         "update User u set u.onboardingCompleted = true where u.userId = :userId"

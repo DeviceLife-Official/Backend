@@ -2,6 +2,7 @@ package com.devicelife.devicelife_api.service.combo;
 
 import com.devicelife.devicelife_api.common.exception.CustomException;
 import com.devicelife.devicelife_api.common.exception.ErrorCode;
+import com.devicelife.devicelife_api.common.security.CustomUserDetails;
 import com.devicelife.devicelife_api.domain.combo.Combo;
 import com.devicelife.devicelife_api.domain.combo.ComboDevice;
 import com.devicelife.devicelife_api.domain.combo.ComboDeviceId;
@@ -35,8 +36,8 @@ public class ComboService {
      * 조합 생성
      */
     @Transactional
-    public ComboCreateResponseDto createCombo(ComboCreateRequestDto request) {
-        Long userId = request.getUserId();
+    public ComboCreateResponseDto createCombo(ComboCreateRequestDto request, CustomUserDetails cud) {
+        Long userId = cud.getId();
 
         User user = em.find(User.class, userId);
         if (user == null) {
@@ -95,7 +96,10 @@ public class ComboService {
      * 조합 목록 조회 (활성 조합만)
      */
     @Transactional(readOnly = true)
-    public List<ComboListResponseDto> getComboList(Long userId) {
+    public List<ComboListResponseDto> getComboList(CustomUserDetails cud) {
+
+        Long userId = cud.getId();
+
         User user = em.find(User.class, userId);
         if (user == null) {
             throw new CustomException(ErrorCode.USER_4041);
@@ -215,7 +219,10 @@ public class ComboService {
      * 휴지통 목록 조회
      */
     @Transactional(readOnly = true)
-    public List<ComboTrashResponseDto> getTrashList(Long userId) {
+    public List<ComboTrashResponseDto> getTrashList(CustomUserDetails cud) {
+
+        Long userId = cud.getId();
+
         User user = em.find(User.class, userId);
         if (user == null) {
             throw new CustomException(ErrorCode.USER_4041);

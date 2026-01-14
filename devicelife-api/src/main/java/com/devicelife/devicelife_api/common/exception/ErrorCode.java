@@ -39,7 +39,20 @@ public enum ErrorCode {
     // 내부 서버 오류 (SERVER_XXXX)
     SERVER_5001("SERVER_5001", 500, "서버 내부 오류입니다."),
     SERVER_5041("SERVER_5041", 504, "외부 서비스 응답 지연"),
-    SERVER_5031("SERVER_5031", 503, "서버가 일시적으로 불안정합니다");
+    SERVER_5031("SERVER_5031", 503, "서버가 일시적으로 불안정합니다"),
+
+    // Notice 관련 오류 (NOTICE_XXXX)
+    NOTICE_4041("NOTICE_4041", 404, "공지를 찾을 수 없습니다."),
+
+    // Faq 관련 오류(FAQ_XXXX)
+    FAQ_4041("FAQ_4041", 404, "FAQ를 찾을 수 없습니다."),
+
+    // Policy 관련 오류(POLICY_XXXX)
+    POLICY_4041("POLICY_4041", 404, "약관을 찾을 수 없습니다."),
+
+    // Inquiry 관련 오류(INQUIRY_XXXX)
+    INQUIRY_4041("INQUIRY_4041", 404, "문의를 찾을 수 없습니다."),
+    ;
 
     private final String code;
     private final int status;

@@ -2,6 +2,7 @@ package com.devicelife.devicelife_api.controller.tag;
 
 import com.devicelife.devicelife_api.common.response.ApiResponse;
 import com.devicelife.devicelife_api.common.response.SuccessCode;
+import com.devicelife.devicelife_api.common.security.CustomUserDetails;
 import com.devicelife.devicelife_api.domain.device.dto.request.UserTagRequestDto;
 import com.devicelife.devicelife_api.domain.device.dto.response.TagResponseDto;
 import com.devicelife.devicelife_api.service.tag.TagService;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -83,10 +85,6 @@ public class TagController {
             [왜 replace?]
             - 온보딩/선택 UI에서 유저가 선택을 바꾸는 게 자연스러움.
               add-only(추가만)로 저장하면 사용자가 '해제'한 태그가 DB에 남아 데이터가 망가짐.
-
-            [JWT 전환 예정]
-            - 현재는 userId를 바디로 받음(임시).
-            - JWT 적용 후에는 userId를 토큰에서 추출하도록 바꿀 것.
             """
     )
     @ApiResponses({
@@ -102,8 +100,10 @@ public class TagController {
             )
     })
     @PostMapping("/user")
-    public ResponseEntity<ApiResponse<Void>> saveUserTags(@Valid @RequestBody UserTagRequestDto request) {
-        tagService.saveUserTags(request);
+    public ResponseEntity<ApiResponse<Void>> saveUserTags(
+            @Valid @RequestBody UserTagRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        tagService.saveUserTags(request,customUserDetails);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.TAG_SAVE_SUCCESS.getCode(),

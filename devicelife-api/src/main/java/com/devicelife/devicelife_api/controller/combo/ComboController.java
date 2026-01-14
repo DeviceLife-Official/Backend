@@ -2,6 +2,7 @@ package com.devicelife.devicelife_api.controller.combo;
 
 import com.devicelife.devicelife_api.common.response.ApiResponse;
 import com.devicelife.devicelife_api.common.response.SuccessCode;
+import com.devicelife.devicelife_api.common.security.CustomUserDetails;
 import com.devicelife.devicelife_api.domain.combo.dto.request.ComboCreateRequestDto;
 import com.devicelife.devicelife_api.domain.combo.dto.request.ComboDeviceAddRequestDto;
 import com.devicelife.devicelife_api.domain.combo.dto.request.ComboPermanentDeleteRequestDto;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,10 +45,6 @@ public class ComboController {
             summary = "조합 생성",
             description = """
             comboName을 받아 combos 테이블에 조합을 생성한다.
-
-            [JWT 전환 예정]
-            - 현재: userId를 요청 바디로 받음
-            - 추후: JWT 인증 도입 시 userId는 토큰에서 추출하도록 변경
             """
     )
     @ApiResponses({
@@ -66,13 +64,13 @@ public class ComboController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     description = """
-                    - userId: 임시(인증 도입 후 토큰에서 추출하도록 변경)
                     - comboName: 최대 80자(Combo 엔티티 제약)
                     """,
                     content = @Content(schema = @Schema(implementation = ComboCreateRequestDto.class))
             )
-            @Valid @RequestBody ComboCreateRequestDto request) {
-        ComboCreateResponseDto result = comboService.createCombo(request);
+            @Valid @RequestBody ComboCreateRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        ComboCreateResponseDto result = comboService.createCombo(request,customUserDetails);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.COMBO_CREATE_SUCCESS.getCode(),
@@ -119,10 +117,6 @@ public class ComboController {
             description = """
             특정 사용자의 활성 조합 목록을 조회한다. (삭제되지 않은 조합만)
             즐겨찾기가 있으면 상단에 표시된다.
-            
-            [JWT 전환 예정]
-            - 현재: userId를 쿼리 파라미터로 받음
-            - 추후: JWT 인증 도입 시 userId는 토큰에서 추출하도록 변경
             """
     )
     @ApiResponses({
@@ -139,8 +133,8 @@ public class ComboController {
     })
     @GetMapping
     public ResponseEntity<ApiResponse<List<ComboListResponseDto>>> getComboList(
-            @RequestParam Long userId) {
-        List<ComboListResponseDto> result = comboService.getComboList(userId);
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        List<ComboListResponseDto> result = comboService.getComboList(customUserDetails);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.COMBO_LIST_SUCCESS.getCode(),
@@ -338,10 +332,6 @@ public class ComboController {
             description = """
             사용자의 휴지통에 있는 조합 목록을 조회한다.
             각 조합의 영구 삭제까지 남은 일수를 함께 반환한다.
-            
-            [JWT 전환 예정]
-            - 현재: userId를 쿼리 파라미터로 받음
-            - 추후: JWT 인증 도입 시 userId는 토큰에서 추출하도록 변경
             """
     )
     @ApiResponses({
@@ -358,8 +348,8 @@ public class ComboController {
     })
     @GetMapping("/trash")
     public ResponseEntity<ApiResponse<List<ComboTrashResponseDto>>> getTrashList(
-            @RequestParam Long userId) {
-        List<ComboTrashResponseDto> result = comboService.getTrashList(userId);
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        List<ComboTrashResponseDto> result = comboService.getTrashList(customUserDetails);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.COMBO_TRASH_LIST_SUCCESS.getCode(),

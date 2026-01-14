@@ -41,7 +41,31 @@ public enum SuccessCode {
 
     ONBOARDING_COMPLETE_SUCCESS("ONBOARDING_2000", "온보딩 완료 처리에 성공했습니다."),
 
-    LIFESTYLE_GET_SUCCESS("LIFESTYLE_2000", "라이프스타일 추천 조회에 성공했습니다.");
+    LIFESTYLE_GET_SUCCESS("LIFESTYLE_2000", "라이프스타일 추천 조회에 성공했습니다."),
+
+    NOTICE_CREATE_SUCCESS("NOTICE_2000", "공지 생성에 성공했습니다."),
+    NOTICE_GET_SUCCESS("NOTICE_2001", "공지 조회에 성공했습니다."),
+    NOTICE_LIST_SUCCESS("NOTICE_2002", "공지 목록 조회에 성공했습니다."),
+    NOTICE_UPDATE_SUCCESS("NOTICE_2003", "공지 수정에 성공했습니다."),
+    NOTICE_DELETE_SUCCESS("NOTICE_2004", "공지 삭제에 성공했습니다."),
+
+    FAQ_CREATE_SUCCESS("FAQ_2000", "FAQ 생성에 성공했습니다."),
+    FAQ_GET_SUCCESS("FAQ_2001", "FAQ 조회에 성공했습니다."),
+    FAQ_UPDATE_SUCCESS("FAQ_2002", "FAQ 수정에 성공했습니다."),
+    FAQ_DELETE_SUCCESS("FAQ_2003", "FAQ 삭제에 성공했습니다."),
+
+    POLICY_CREATE_SUCCESS("POLICY_2000", "약관 생성에 성공했습니다."),
+    POLICY_GET_SUCCESS("POLICY_2001", "약관 조회에 성공했습니다."),
+    POLICY_LIST_SUCCESS("POLICY_2002", "약관 목록 조회에 성공했습니다."),
+    POLICY_UPDATE_SUCCESS("POLICY_2003", "약관 수정에 성공했습니다."),
+    POLICY_DELETE_SUCCESS("POLICY_2004", "약관 삭제에 성공했습니다."),
+
+    INQUIRY_CREATE_SUCCESS("INQUIRY_2000", "문의 생성에 성공했습니다."),
+    INQUIRY_GET_SUCCESS("INQUIRY_2001", "문의 조회에 성공했습니다."),
+    INQUIRY_LIST_SUCCESS("INQUIRY_2002", "문의 목록 조회에 성공했습니다."),
+    INQUIRY_STATUS_CHANGE_SUCCESS("INQUIRY_2003", "문의 상태 변경에 성공했습니다."),
+    INQUIRY_DELETE_SUCCESS("INQUIRY_2004", "문의 삭제에 성공했습니다."),
+    ;
 
 
     private final String code;

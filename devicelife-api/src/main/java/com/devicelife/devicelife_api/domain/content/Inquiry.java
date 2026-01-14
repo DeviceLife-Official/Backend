@@ -41,5 +41,9 @@ public class Inquiry extends BaseTimeEntity {
     @Column(name = "status", length = 20, nullable = false)
     @Builder.Default
     private InquiryStatus status = InquiryStatus.OPEN;
+
+    public void updateStatus(InquiryStatus status) {
+        this.status = status;
+    }
 }
 
