@@ -43,7 +43,7 @@ public class JwtUtil {
                 .collect(Collectors.joining(","));
 
         return Jwts.builder()
-                .subject(user.getUsername())
+                .subject(String.valueOf(user.getId()))
                 .claim("role", authorities)
                 .claim("email", user.getUsername())
                 .claim("type", "access_token")
@@ -59,7 +59,7 @@ public class JwtUtil {
         Instant now = Instant.now();
 
         return Jwts.builder()
-                .subject(user.getUsername())
+                .subject(String.valueOf(user.getId()))
                 .claim("email", user.getUsername())
                 .claim("type", "refresh_token")
                 .issuedAt(Date.from(now)) // 언제 발급한지
@@ -81,6 +81,17 @@ public class JwtUtil {
             return null;
         }
     }
+
+    public Long getUserId(String token) {
+        try {
+            String subject = getClaims(token).getPayload().getSubject(); // subject
+            if (subject == null || subject.isBlank()) return null;
+            return Long.parseLong(subject);
+        } catch (JwtException | NumberFormatException e) {
+            return null;
+        }
+    }
+
 
     /** 토큰 유효성 확인
      *

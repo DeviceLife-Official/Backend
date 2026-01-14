@@ -3,6 +3,7 @@ package com.devicelife.devicelife_api.repository.tag;
 import com.devicelife.devicelife_api.domain.device.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,4 +15,6 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
      */
     List<Tag> findAllByTagType(String tagType);
     Optional<Tag> findByTagKey(String tagKey);
+
+    List<Tag> findByTagLabelIn(Collection<String> tagLabels);
 }
