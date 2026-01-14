@@ -14,14 +14,25 @@
 
 ---
 
+## 🧑🏻‍💻 팀원 (Contributors)
+
+| <img src="https://github.com/weeeeestern.png" width="150" height="150"/> | <img src="https://github.com/nsh0919.png" width="150" height="150"/> | <img src="https://github.com/LABYRINTH3.png" width="150" height="150"/> | <img src="https://github.com/ccjngwn.png" width="150" height="150"/> |
+| :---------------------------------------------------------------: | :---------------------------------------------------------------: | :---------------------------------------------------------------: | :---------------------------------------------------------------: |
+| 박은서 <br/> [@weeeeestern](https://github.com/weeeeestern) | 남성현 <br/> [@nsh0919](https://github.com/nsh0919) | 이태훈 <br/> [@LABYRINTH3](https://github.com/LABYRINTH3) | 채정원 <br/> [@ccjngwn](https://github.com/ccjngwn) |
+| **Backend Lead** | **Backend** | **Backend** | **Backend** |
+
+---
+
 ## 🛠️ 기술 스택 (Tech Stack)
 
-Backend : Spring Boot
-Database : MySQL (필요 시 NoSQL 추가)
-Infra : AWS / Docker / Nginx
-Collaboration : GitHub / GitHub Actions
-API Docs : Swagger
-Async / Cache : 필요 시 Redis / Message Queue 추가
+| 역할 | 종류 | 선정 근거 |
+| :--: | :-- | :-- |
+| **Backend** | ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white) | 안정적인 서버 아키텍처를 구성하고 REST API 개발을 효율적으로 수행하기 위해 사용했습니다. |
+| **Database** | ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white) | MySQL 기반으로 데이터를 안정적으로 관리하고, Redis 캐싱을 통해 응답 속도 및 성능을 최적화했습니다. |
+| **Infrastructure** | ![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) ![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white) | Docker 기반으로 배포 환경을 구성하고, AWS 인프라에서 확장성을 고려한 서버 운영을 위해 설계했습니다. |
+| **Async / Queue** | ![RabbitMQ](https://img.shields.io/badge/RabbitMQ-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white) | 비동기 작업 처리 및 트래픽 분산을 위한 메시지 큐로, 필요 시 도입 가능한 구조를 고려했습니다. |
+| **API Docs** | ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black) | API 문서 자동화를 통해 프론트엔드와의 협업 효율을 높이고, 명세 관리 부담을 줄였습니다. |
+| **Collaboration / CI** | ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white) | GitHub 기반으로 협업을 진행하고, GitHub Actions로 CI 파이프라인을 구성해 자동화된 빌드/배포 환경을 구축했습니다. |
 
 ---
 
