@@ -28,12 +28,17 @@
 | 역할 | 종류 | 선정 근거 |
 | :--: | :-- | :-- |
 | **Backend** | ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white) | 안정적인 서버 아키텍처를 구성하고 REST API 개발을 효율적으로 수행하기 위해 사용했습니다. |
-| **Database** | ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white) | MySQL 기반으로 데이터를 안정적으로 관리하고, Redis 캐싱을 통해 응답 속도 및 성능을 최적화했습니다. |
-| **Infrastructure** | ![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) ![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white) | Docker 기반으로 배포 환경을 구성하고, AWS 인프라에서 확장성을 고려한 서버 운영을 위해 설계했습니다. |
-| **Async / Queue** | ![RabbitMQ](https://img.shields.io/badge/RabbitMQ-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white) | 비동기 작업 처리 및 트래픽 분산을 위한 메시지 큐로, 필요 시 도입 가능한 구조를 고려했습니다. |
+| **Database** | ![Amazon RDS](https://img.shields.io/badge/Amazon%20RDS-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white) ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white) | RDS(MySQL)로 영속 데이터를 안정적으로 관리하고, VPC Private Subnet에 배치해 보안성을 높였습니다. |
+| **Infrastructure** | ![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white) ![Amazon EC2](https://img.shields.io/badge/Amazon%20EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white) ![Amazon Route 53](https://img.shields.io/badge/Amazon%20Route%2053-8C4FFF?style=for-the-badge&logo=amazonroute53&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) ![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white) | 단일 EC2 내 Docker 컨테이너(Nginx + Spring Boot)로 배포를 단순화하고, Route53으로 도메인 라우팅을 구성했습니다. Nginx는 리버스 프록시/HTTPS 종단 및 라우팅을 담당합니다. |
+| **Async / Queue** | ![Amazon SQS](https://img.shields.io/badge/Amazon%20SQS-FF4F8B?style=for-the-badge&logo=amazonsqs&logoColor=white) | 평가 작업을 SQS(Job/Result Queue)로 분리해 처리량 변동을 흡수하고, On-Prem Evaluation Worker와 API 서버를 느슨하게 결합했습니다. |
+| **External Integration** | ![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white) | 운영(관리자 콘솔) 기능을 Discord Slash Command로 대체하고, Spring Boot 앱 내부에서 JDA 리스너로 이벤트를 처리합니다. |
 | **API Docs** | ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black) | API 문서 자동화를 통해 프론트엔드와의 협업 효율을 높이고, 명세 관리 부담을 줄였습니다. |
 | **Collaboration / CI** | ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white) | GitHub 기반으로 협업을 진행하고, GitHub Actions로 CI 파이프라인을 구성해 자동화된 빌드/배포 환경을 구축했습니다. |
 
+---
+
+## 🏗️ 인프라 구조 (Infrastructure Architecture)
+![img.png](img.png)
 ---
 
 ## 🌐 Git-flow 전략 (Git-flow Strategy)
