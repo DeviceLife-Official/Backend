@@ -70,10 +70,13 @@ public class ComboService {
         List<ComboDeviceResponseDto> deviceDtos = comboDevices.stream()
                 .map(cd -> ComboDeviceResponseDto.builder()
                         .deviceId(cd.getDevice().getDeviceId())
-                        .modelName(cd.getDevice().getModelName())
+                        .name(cd.getDevice().getName())
+                        .modelCode(cd.getDevice().getModelCode())
                         .brandName(cd.getDevice().getBrand().getBrandName())
-                        .categoryName(cd.getDevice().getCategory().getCategoryName())
-                        .price(cd.getDevice().getMsrp())
+                        .deviceType(cd.getDevice().getDeviceType() != null 
+                                ? cd.getDevice().getDeviceType().getDisplayName() : null)
+                        .price(cd.getDevice().getPrice())
+                        .imageUrl(cd.getDevice().getImageUrl())
                         .addedAt(cd.getAddedAt())
                         .build())
                 .collect(Collectors.toList());
@@ -305,7 +308,7 @@ public class ComboService {
     private void updateComboTotalPrice(Combo combo) {
         List<ComboDevice> comboDevices = comboDeviceRepository.findAllByComboId(combo.getComboId());
         Integer totalPrice = comboDevices.stream()
-                .map(cd -> cd.getDevice().getMsrp() != null ? cd.getDevice().getMsrp() : 0)
+                .map(cd -> cd.getDevice().getPrice() != null ? cd.getDevice().getPrice() : 0)
                 .reduce(0, Integer::sum);
 
         combo.updateTotalPrice(totalPrice);

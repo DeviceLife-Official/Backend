@@ -9,9 +9,11 @@ import java.time.LocalDateTime;
 @Builder
 public class ComboDeviceResponseDto {
     private Long deviceId;
-    private String modelName;
-    private String brandName;
-    private String categoryName;
-    private Integer price;
-    private LocalDateTime addedAt;
+    private String name;           // 제품명
+    private String modelCode;      // 모델 코드
+    private String brandName;      // 브랜드명
+    private String deviceType;     // 디바이스 타입 (SMARTPHONE, LAPTOP 등)
+    private Integer price;         // 가격
+    private String imageUrl;       // 이미지 URL
+    private LocalDateTime addedAt; // 추가 일시
 }

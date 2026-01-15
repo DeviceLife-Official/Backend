@@ -16,7 +16,6 @@ public interface ComboDeviceRepository extends JpaRepository<ComboDevice, ComboD
     @Query("SELECT cd FROM ComboDevice cd " +
            "JOIN FETCH cd.device d " +
            "JOIN FETCH d.brand " +
-           "JOIN FETCH d.category " +
            "WHERE cd.id.comboId = :comboId " +
            "ORDER BY cd.addedAt DESC")
     List<ComboDevice> findAllByComboId(@Param("comboId") Long comboId);
