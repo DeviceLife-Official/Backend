@@ -88,10 +88,10 @@ public class LifestyleFeaturedRepository {
             SELECT
                 sd.slot AS slot,
                 d.deviceId AS deviceId,
-                img.imageUrl AS imageUrl,
-                CONCAT(b.brandName, ' ', d.modelName) AS displayName,
+                COALESCE(d.imageUrl, img.imageUrl) AS imageUrl,
+                CONCAT(b.brandName, ' ', d.name) AS displayName,
                 d.releaseDate AS releaseDate,
-                COALESCE(MIN(o.price), d.msrp) AS price
+                COALESCE(MIN(o.price), d.price) AS price
             FROM tags t
             JOIN lifestyleFeaturedSets s
               ON s.tagId = t.tagId AND s.isActive = 1
@@ -113,7 +113,7 @@ public class LifestyleFeaturedRepository {
                 ) m ON m.deviceId = di1.deviceId AND m.minSort = di1.sortOrder
             ) img ON img.deviceId = d.deviceId
             WHERE t.tagKey = :tagKey
-            GROUP BY sd.slot, d.deviceId, img.imageUrl, b.brandName, d.modelName, d.releaseDate, d.msrp
+            GROUP BY sd.slot, d.deviceId, d.imageUrl, img.imageUrl, b.brandName, d.name, d.releaseDate, d.price
             ORDER BY sd.slot ASC
         """;
 

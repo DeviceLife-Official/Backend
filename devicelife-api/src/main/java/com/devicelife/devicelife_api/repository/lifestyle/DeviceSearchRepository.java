@@ -16,10 +16,10 @@ public class DeviceSearchRepository {
 
     public List<DeviceSearchDto> searchByKeyword(String keyword, int limit) {
         String sql = """
-            SELECT d.deviceId, CONCAT(b.brandName, ' ', d.modelName) AS displayName
+            SELECT d.deviceId, CONCAT(b.brandName, ' ', d.name) AS displayName
             FROM devices d
             JOIN brands b ON b.brandId = d.brandId
-            WHERE d.modelName LIKE :kw OR b.brandName LIKE :kw
+            WHERE d.name LIKE :kw OR b.brandName LIKE :kw
             ORDER BY d.deviceId DESC
             LIMIT :limit
         """;

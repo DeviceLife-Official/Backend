@@ -1,37 +1,41 @@
 package com.devicelife.devicelife_api.domain.device;
 
 import com.devicelife.devicelife_api.domain.common.BaseTimeEntity;
+import com.devicelife.devicelife_api.domain.device.enums.DeviceType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import lombok.experimental.SuperBuilder;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Map;
 
+/**
+ * Device 엔티티 (부모 클래스)
+ * 모든 디바이스의 공통 속성을 정의합니다.
+ * JOINED 상속 전략을 사용하여 각 디바이스 타입별 테이블이 생성됩니다.
+ */
 @Entity
 @Table(name = "devices")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "deviceType", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Device extends BaseTimeEntity {
+@SuperBuilder
+public abstract class Device extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "deviceId")
     private Long deviceId;
 
-    @Column(name = "categoryId", nullable = false, insertable = false, updatable = false)
-    private Long categoryId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoryId", nullable = false)
-    private Category category;
+    /**
+     * 디바이스 타입 (SMARTPHONE, LAPTOP, TABLET 등)
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "deviceType", insertable = false, updatable = false, nullable = false)
+    private DeviceType deviceType;
 
     @Column(name = "brandId", nullable = false, insertable = false, updatable = false)
     private Long brandId;
@@ -40,35 +44,43 @@ public class Device extends BaseTimeEntity {
     @JoinColumn(name = "brandId", nullable = false)
     private Brand brand;
 
-    @Column(name = "modelName", length = 200, nullable = false)
-    private String modelName;
+    /**
+     * 제품명 (사용자에게 표시되는 공식 제품명)
+     * e.g., "Galaxy Book 4 Pro", "iPhone 15 Pro"
+     */
+    @Column(name = "name", length = 200, nullable = false)
+    private String name;
 
+    /**
+     * 모델명 (정확한 식별을 위한 고유 코드)
+     * e.g., "NT960XGK-K71A", "A3101"
+     */
     @Column(name = "modelCode", length = 120)
     private String modelCode;
 
+    /**
+     * 가격 (현재 판매 최저가 또는 출고가, KRW)
+     */
+    @Column(name = "price")
+    private Integer price;
+
+    /**
+     * 출시일
+     */
     @Column(name = "releaseDate")
     private LocalDate releaseDate;
 
-    @Column(name = "msrp")
-    private Integer msrp;
+    /**
+     * 대표 색상 코드 (HEX)
+     * e.g., "#1C1C1E"
+     */
+    @Column(name = "colorHex", length = 7)
+    private String colorHex;
 
-    @Column(name = "weightGram")
-    private Integer weightGram;
-
-    @Column(name = "batteryMah")
-    private Integer batteryMah;
-
-    @Column(name = "ramGb")
-    private Integer ramGb;
-
-    @Column(name = "storageGb")
-    private Integer storageGb;
-
-    @Column(name = "screenInch", precision = 4, scale = 2)
-    private BigDecimal screenInch;
-
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "specJson", columnDefinition = "json")
-    private Map<String, Object> specJson;
+    /**
+     * 제품 이미지 URL (누끼 처리된 썸네일)
+     */
+    @Column(name = "imageUrl", length = 500)
+    private String imageUrl;
 }
 
