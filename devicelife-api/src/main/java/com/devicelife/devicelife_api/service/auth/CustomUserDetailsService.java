@@ -1,7 +1,6 @@
 package com.devicelife.devicelife_api.service.auth;
 
 import com.devicelife.devicelife_api.common.exception.CustomException;
-import com.devicelife.devicelife_api.common.exception.ErrorCode;
 import com.devicelife.devicelife_api.common.security.CustomUserDetails;
 import com.devicelife.devicelife_api.domain.user.User;
 import com.devicelife.devicelife_api.repository.user.UserRepository;
@@ -19,12 +18,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(
-            String username
+
+    public UserDetails loadUserByUserId(
+            Long userId
     ) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username)
+        User user = userRepository.findByUserId((userId))
                 .orElseThrow(() -> new CustomException(USER_4041));
+        return new CustomUserDetails(user);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return new CustomUserDetails(user);
     }
 }

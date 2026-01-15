@@ -20,12 +20,15 @@ public class User extends BaseTimeEntity {
     @Column(name = "username", length = 30/*, unique = true*/)
     private String username;
 
+    @Setter
     @Column(name = "passwordHash", length = 255)
     private String passwordHash;
 
+    @Setter
     @Column(name = "nickname", length = 50, nullable = false)
     private String nickname;
 
+    @Setter
     @Column(name = "email", length = 255, unique = true)
     private String email;
 
