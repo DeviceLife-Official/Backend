@@ -85,6 +85,35 @@ public class AuthDto {
         String loginId;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class refreshResDto {
+        Long userId;
+        String accessToken;
+    }
 
+    @Getter
+    @Setter
+    public static class findIdReqDto {
+
+        @NotBlank
+        String username;
+
+        @NotBlank
+        @Pattern(
+                regexp = "^[0-9]+$",
+                message = "전화번호는 숫자만 입력해야 합니다.")
+        String phoneNumber;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class findIdResDto {
+        String emailInfo;
+    }
 
 }

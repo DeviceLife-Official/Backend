@@ -2,10 +2,13 @@ package com.devicelife.devicelife_api.common.config;
 
 import com.devicelife.devicelife_api.common.security.JwtAuthFilter;
 import com.devicelife.devicelife_api.common.security.JwtUtil;
+import com.devicelife.devicelife_api.common.security.oauth2.OAuth2SuccessHandler;
+import com.devicelife.devicelife_api.common.security.oauth2.OAuth2UserProviderRouter;
 import com.devicelife.devicelife_api.service.auth.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -23,6 +26,8 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
+    private final OAuth2UserProviderRouter oAuth2UserProviderRouter;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,6 +46,13 @@ public class SecurityConfig {
                         //.requestMatchers("/api/auth/").hasRole("USER")
                         .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated()
+                )
+
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(oAuth2UserProviderRouter) // 사용자 정보 받아오기
+                        )
+                        .successHandler(oAuth2SuccessHandler) // JWT 발급 및 응답
                 )
 
                 .logout(logout -> logout

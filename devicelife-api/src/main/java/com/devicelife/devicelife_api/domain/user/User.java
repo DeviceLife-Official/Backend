@@ -2,10 +2,7 @@ package com.devicelife.devicelife_api.domain.user;
 
 import com.devicelife.devicelife_api.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "users")
@@ -20,7 +17,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "userId")
     private Long userId;
 
-    @Column(name = "username", length = 30, unique = true)
+    @Column(name = "username", length = 30/*, unique = true*/)
     private String username;
 
     @Column(name = "passwordHash", length = 255)
@@ -41,7 +38,17 @@ public class User extends BaseTimeEntity {
     @Builder.Default
     private boolean onboardingCompleted = false;
 
-    @Column(name = "phoneNumber", nullable = false)
+    @Column(name = "phoneNumber")
     private String phoneNumber;
+
+    @Setter
+    @Enumerated(EnumType.STRING)
+    @Column(name = "provider", nullable = false)
+    @Builder.Default
+    private AuthProvider provider = AuthProvider.GENERAL;
+
+    @Setter
+    @Column(name = "providerId")
+    private String providerId;
 }
 
