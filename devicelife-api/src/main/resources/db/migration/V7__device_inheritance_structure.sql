@@ -1,4 +1,4 @@
--- V4__device_inheritance_structure.sql
+-- V7__device_inheritance_structure.sql
 -- 디바이스 상속 구조로 변경 (JOINED 전략)
 -- 기존 devices 테이블을 부모 테이블로 변경하고, 각 디바이스 타입별 자식 테이블 생성
 
