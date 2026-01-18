@@ -1,0 +1,86 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ develop ]
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # JDK 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Build with Gradle
+        run: |
+          cd devicelife-api
+          chmod +x gradlew
+          ./gradlew clean build -x test
+
+      #AWS 인증
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # IAM에서 받아온 값
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+      #  ECR 로그인
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # 이미지 build & push (시간태그 + develop-latest 둘 다 푸시 추천)
+      - name: Build, tag, and push the image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
+        run: |
+          cd devicelife-api
+          IMAGE_TAG=$(date -u +"%Y%m%dT%H%M%SZ")
+          
+          docker build -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} .
+          docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+
+        # develop 최신 태그도 같이 (EC2가 항상 이 태그 pull 하게)
+          docker tag ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} ${ECR_REGISTRY}/${ECR_REPOSITORY}:develop-latest
+          docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:develop-latest
+               
+          echo "image=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
+          echo "latest_image=${ECR_REGISTRY}/${ECR_REPOSITORY}:develop-latest" >> $GITHUB_OUTPUT
+
+        # EC2 접속해서 배포 실행 + nginx.conf 반영 + reload
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            set -e
+
+        # 1) ECR 로그인
+            aws ecr get-login-password --region ap-northeast-2 \
+                    | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com
+                   
+        # 2) compose로 최신 이미지 pull & 재기동
+            cd /home/ec2-user/Backend/devicelife-api
+            docker compose -f docker-compose.yml pull
+            docker compose -f docker-compose.yml up -d
+                   
+        # 3) nginx.conf 반영 (가이드처럼 "이미지 빌드 X, 파일만 덮어쓰기")
+            sudo cp ./nginx/devicelife.conf /etc/nginx/conf.d/devicelife.conf
+                   
+        # 4) 문법 검사 후 reload (무중단)
+            sudo nginx -t
+            sudo systemctl reload nginx
