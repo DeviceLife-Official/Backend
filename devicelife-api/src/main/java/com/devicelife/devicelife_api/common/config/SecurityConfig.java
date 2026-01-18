@@ -82,7 +82,7 @@ public class SecurityConfig {
                 "http://localhost:5173",
                 "https://devicelife.site",
                 "https://www.devicelife.site"
-                //"https://api.hongikdevtalk.com"
+                //"https://api.devicelife.site"
         ));
         config.setAllowedMethods(java.util.List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         config.setAllowedHeaders(java.util.List.of("*"));
