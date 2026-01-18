@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -74,4 +75,22 @@ public class SecurityConfig {
         return new JwtAuthFilter(jwtUtil, customUserDetailsService);
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        var config = new org.springframework.web.cors.CorsConfiguration();
+        config.setAllowedOrigins(java.util.List.of(
+                "http://localhost:5173",
+                "https://devicelife.site",
+                "https://www.devicelife.site"
+                //"https://api.hongikdevtalk.com"
+        ));
+        config.setAllowedMethods(java.util.List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+        config.setAllowedHeaders(java.util.List.of("*"));
+        config.setAllowCredentials(true);
+        config.setExposedHeaders(java.util.List.of("Authorization", "Location"));
+
+        var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 }
