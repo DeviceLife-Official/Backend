@@ -1,7 +1,7 @@
 services:
   api:
     container_name: api
-    build: .
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:develop-latest
     env_file:
       - .env
     ports:
