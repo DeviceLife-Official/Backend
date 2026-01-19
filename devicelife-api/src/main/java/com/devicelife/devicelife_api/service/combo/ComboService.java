@@ -61,11 +61,21 @@ public class ComboService {
      * 조합 상세 조회
      */
     @Transactional(readOnly = true)
-    public ComboDetailResponseDto getComboDetail(Long comboId) {
+    public ComboDetailResponseDto getComboDetail(Long comboId, CustomUserDetails cud) {
         Combo combo = comboRepository.findActiveComboById(comboId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMBO_4041));
 
-        List<ComboDevice> comboDevices = comboDeviceRepository.findAllByComboId(comboId);
+        // 권한 검사: 본인의 조합인지 확인
+        validateComboOwnership(combo, cud.getId());
+
+        return buildComboDetailResponse(combo);
+    }
+
+    /**
+     * 조합 상세 정보 빌드 (내부용)
+     */
+    private ComboDetailResponseDto buildComboDetailResponse(Combo combo) {
+        List<ComboDevice> comboDevices = comboDeviceRepository.findAllByComboId(combo.getComboId());
 
         List<ComboDeviceResponseDto> deviceDtos = comboDevices.stream()
                 .map(cd -> ComboDeviceResponseDto.builder()
@@ -93,6 +103,15 @@ public class ComboService {
                 .updatedAt(combo.getUpdatedAt())
                 .devices(deviceDtos)
                 .build();
+    }
+
+    /**
+     * 권한 검사: 본인의 조합인지 확인
+     */
+    private void validateComboOwnership(Combo combo, Long userId) {
+        if (combo.getUserId() == null || !combo.getUserId().equals(userId)) {
+            throw new CustomException(ErrorCode.AUTH_4031);
+        }
     }
 
     /**
@@ -132,22 +151,28 @@ public class ComboService {
      * 조합 수정 (조합명 변경)
      */
     @Transactional
-    public ComboDetailResponseDto updateCombo(Long comboId, ComboUpdateRequestDto request) {
+    public ComboDetailResponseDto updateCombo(Long comboId, ComboUpdateRequestDto request, CustomUserDetails cud) {
         Combo combo = comboRepository.findActiveComboById(comboId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMBO_4041));
 
+        // 권한 검사: 본인의 조합인지 확인
+        validateComboOwnership(combo, cud.getId());
+
         combo.updateComboName(request.getComboName());
 
-        return getComboDetail(comboId);
+        return buildComboDetailResponse(combo);
     }
 
     /**
      * 조합 삭제 (소프트 삭제 - 휴지통으로 이동)
      */
     @Transactional
-    public void deleteCombo(Long comboId) {
+    public void deleteCombo(Long comboId, CustomUserDetails cud) {
         Combo combo = comboRepository.findActiveComboById(comboId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMBO_4041));
+
+        // 권한 검사: 본인의 조합인지 확인
+        validateComboOwnership(combo, cud.getId());
 
         combo.softDelete();
     }
@@ -156,22 +181,28 @@ public class ComboService {
      * 조합 즐겨찾기 토글
      */
     @Transactional
-    public ComboDetailResponseDto togglePin(Long comboId) {
+    public ComboDetailResponseDto togglePin(Long comboId, CustomUserDetails cud) {
         Combo combo = comboRepository.findActiveComboById(comboId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMBO_4041));
 
+        // 권한 검사: 본인의 조합인지 확인
+        validateComboOwnership(combo, cud.getId());
+
         combo.togglePin();
 
-        return getComboDetail(comboId);
+        return buildComboDetailResponse(combo);
     }
 
     /**
      * 조합에 기기 추가
      */
     @Transactional
-    public ComboDetailResponseDto addDeviceToCombo(Long comboId, ComboDeviceAddRequestDto request) {
+    public ComboDetailResponseDto addDeviceToCombo(Long comboId, ComboDeviceAddRequestDto request, CustomUserDetails cud) {
         Combo combo = comboRepository.findActiveComboById(comboId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMBO_4041));
+
+        // 권한 검사: 본인의 조합인지 확인
+        validateComboOwnership(combo, cud.getId());
 
         Device device = em.find(Device.class, request.getDeviceId());
         if (device == null) {
@@ -194,16 +225,19 @@ public class ComboService {
         // 총 가격 업데이트
         updateComboTotalPrice(combo);
 
-        return getComboDetail(comboId);
+        return buildComboDetailResponse(combo);
     }
 
     /**
      * 조합에서 기기 삭제
      */
     @Transactional
-    public ComboDetailResponseDto removeDeviceFromCombo(Long comboId, Long deviceId) {
+    public ComboDetailResponseDto removeDeviceFromCombo(Long comboId, Long deviceId, CustomUserDetails cud) {
         Combo combo = comboRepository.findActiveComboById(comboId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMBO_4041));
+
+        // 권한 검사: 본인의 조합인지 확인
+        validateComboOwnership(combo, cud.getId());
 
         ComboDeviceId comboDeviceId = new ComboDeviceId(comboId, deviceId);
         if (!comboDeviceRepository.existsById(comboDeviceId)) {
@@ -215,7 +249,7 @@ public class ComboService {
         // 총 가격 업데이트
         updateComboTotalPrice(combo);
 
-        return getComboDetail(comboId);
+        return buildComboDetailResponse(combo);
     }
 
     /**
@@ -254,9 +288,12 @@ public class ComboService {
      * 휴지통에서 복구
      */
     @Transactional
-    public ComboDetailResponseDto restoreCombo(Long comboId) {
+    public ComboDetailResponseDto restoreCombo(Long comboId, CustomUserDetails cud) {
         Combo combo = comboRepository.findById(comboId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMBO_4041));
+
+        // 권한 검사: 본인의 조합인지 확인
+        validateComboOwnership(combo, cud.getId());
 
         if (!combo.isDeleted()) {
             throw new CustomException(ErrorCode.COMBO_4041);
@@ -264,17 +301,20 @@ public class ComboService {
 
         combo.restore();
 
-        return getComboDetail(comboId);
+        return buildComboDetailResponse(combo);
     }
 
     /**
      * 휴지통에서 영구 삭제
      */
     @Transactional
-    public void permanentDeleteCombos(List<Long> comboIds) {
+    public void permanentDeleteCombos(List<Long> comboIds, CustomUserDetails cud) {
         for (Long comboId : comboIds) {
             Combo combo = comboRepository.findById(comboId)
                     .orElseThrow(() -> new CustomException(ErrorCode.COMBO_4041));
+
+            // 권한 검사: 본인의 조합인지 확인
+            validateComboOwnership(combo, cud.getId());
 
             if (!combo.isDeleted()) {
                 throw new CustomException(ErrorCode.COMBO_4002);
