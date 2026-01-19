@@ -79,8 +79,8 @@ public class Smartwatch extends Device {
     /**
      * 배터리 수명 (일)
      */
-    @Column(name = "batteryLifeDays")
-    private Integer batteryLifeDays;
+    @Column(name = "battery")
+    private Integer battery;
 
     /**
      * 방수 등급 (ATM)
