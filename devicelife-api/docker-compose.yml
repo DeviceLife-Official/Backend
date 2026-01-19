@@ -1,7 +1,7 @@
 services:
   api:
     container_name: api
-    image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:main-latest
     env_file:
       - .env
     ports:

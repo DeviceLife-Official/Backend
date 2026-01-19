@@ -72,14 +72,9 @@ jobs:
             # 1) ECR 로그인
             aws ecr get-login-password --region ap-northeast-2 \
               | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com
-
-            cat > .env <<EOF
-            ECR_REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com
-            ECR_REPOSITORY=${{ secrets.REPO_NAME }}
-            IMAGE_TAG=${{ github.sha }}
-            EOF
             
             cd /home/ec2-user/Backend/devicelife-api
+
             docker compose pull
             docker compose up -d --force-recreate
 
