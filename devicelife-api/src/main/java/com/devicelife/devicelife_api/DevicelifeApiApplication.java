@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableJpaAuditing
-@EnableScheduling
+@EnableScheduling //무야호
 public class DevicelifeApiApplication {
 
 	public static void main(String[] args) {
