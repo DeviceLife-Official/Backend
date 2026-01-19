@@ -25,7 +25,7 @@ import java.util.List;
 @Tag(
         name = "Combo",
         description = """
-        기기 조합 관리 API
+        기기 조합 관리 API - 인증 필요 (JWT Token)
         - 조합 생성/수정/조회/삭제
         - 조합에 기기 추가/삭제
         - 즐겨찾기(핀) 관리
@@ -85,12 +85,18 @@ public class ComboController {
             description = """
             특정 조합의 상세 정보를 조회한다.
             포함된 기기 목록도 함께 반환한다.
+            본인의 조합만 조회할 수 있다.
             """
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "성공",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "403",
+                    description = "접근 권한이 없음 (본인의 조합이 아님)",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -101,8 +107,9 @@ public class ComboController {
     })
     @GetMapping("/{comboId}")
     public ResponseEntity<ApiResponse<ComboDetailResponseDto>> getComboDetail(
-            @PathVariable Long comboId) {
-        ComboDetailResponseDto result = comboService.getComboDetail(comboId);
+            @PathVariable Long comboId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        ComboDetailResponseDto result = comboService.getComboDetail(comboId, customUserDetails);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.COMBO_GET_SUCCESS.getCode(),
@@ -148,12 +155,18 @@ public class ComboController {
             summary = "조합 수정",
             description = """
             조합명(comboName)을 수정한다.
+            본인의 조합만 수정할 수 있다.
             """
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "성공",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "403",
+                    description = "접근 권한이 없음 (본인의 조합이 아님)",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -165,8 +178,9 @@ public class ComboController {
     @PutMapping("/{comboId}")
     public ResponseEntity<ApiResponse<ComboDetailResponseDto>> updateCombo(
             @PathVariable Long comboId,
-            @Valid @RequestBody ComboUpdateRequestDto request) {
-        ComboDetailResponseDto result = comboService.updateCombo(comboId, request);
+            @Valid @RequestBody ComboUpdateRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        ComboDetailResponseDto result = comboService.updateCombo(comboId, request, customUserDetails);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.COMBO_UPDATE_SUCCESS.getCode(),
@@ -181,12 +195,18 @@ public class ComboController {
             description = """
             조합을 휴지통으로 이동한다. (소프트 삭제)
             30일 후 자동으로 영구 삭제된다.
+            본인의 조합만 삭제할 수 있다.
             """
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "성공",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "403",
+                    description = "접근 권한이 없음 (본인의 조합이 아님)",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -197,8 +217,9 @@ public class ComboController {
     })
     @DeleteMapping("/{comboId}")
     public ResponseEntity<ApiResponse<Void>> deleteCombo(
-            @PathVariable Long comboId) {
-        comboService.deleteCombo(comboId);
+            @PathVariable Long comboId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        comboService.deleteCombo(comboId, customUserDetails);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.COMBO_DELETE_SUCCESS.getCode(),
@@ -216,12 +237,18 @@ public class ComboController {
             조합의 즐겨찾기 상태를 토글한다.
             - 즐겨찾기가 없으면 설정
             - 즐겨찾기가 있으면 해제
+            본인의 조합만 변경할 수 있다.
             """
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "성공",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "403",
+                    description = "접근 권한이 없음 (본인의 조합이 아님)",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -232,8 +259,9 @@ public class ComboController {
     })
     @PostMapping("/{comboId}/pin")
     public ResponseEntity<ApiResponse<ComboDetailResponseDto>> togglePin(
-            @PathVariable Long comboId) {
-        ComboDetailResponseDto result = comboService.togglePin(comboId);
+            @PathVariable Long comboId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        ComboDetailResponseDto result = comboService.togglePin(comboId, customUserDetails);
         String code = result.getIsPinned() 
                 ? SuccessCode.COMBO_PIN_SUCCESS.getCode() 
                 : SuccessCode.COMBO_UNPIN_SUCCESS.getCode();
@@ -254,12 +282,18 @@ public class ComboController {
             조합에 기기를 추가한다.
             이미 추가된 기기는 중복 추가할 수 없다.
             총 가격이 자동으로 업데이트된다.
+            본인의 조합에만 기기를 추가할 수 있다.
             """
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "성공",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "403",
+                    description = "접근 권한이 없음 (본인의 조합이 아님)",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -276,8 +310,9 @@ public class ComboController {
     @PostMapping("/{comboId}/devices")
     public ResponseEntity<ApiResponse<ComboDetailResponseDto>> addDeviceToCombo(
             @PathVariable Long comboId,
-            @Valid @RequestBody ComboDeviceAddRequestDto request) {
-        ComboDetailResponseDto result = comboService.addDeviceToCombo(comboId, request);
+            @Valid @RequestBody ComboDeviceAddRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        ComboDetailResponseDto result = comboService.addDeviceToCombo(comboId, request, customUserDetails);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.COMBO_DEVICE_ADD_SUCCESS.getCode(),
@@ -292,12 +327,18 @@ public class ComboController {
             description = """
             조합에서 기기를 삭제한다.
             총 가격이 자동으로 업데이트된다.
+            본인의 조합에서만 기기를 삭제할 수 있다.
             """
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "성공",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "403",
+                    description = "접근 권한이 없음 (본인의 조합이 아님)",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -314,8 +355,9 @@ public class ComboController {
     @DeleteMapping("/{comboId}/devices/{deviceId}")
     public ResponseEntity<ApiResponse<ComboDetailResponseDto>> removeDeviceFromCombo(
             @PathVariable Long comboId,
-            @PathVariable Long deviceId) {
-        ComboDetailResponseDto result = comboService.removeDeviceFromCombo(comboId, deviceId);
+            @PathVariable Long deviceId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        ComboDetailResponseDto result = comboService.removeDeviceFromCombo(comboId, deviceId, customUserDetails);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.COMBO_DEVICE_REMOVE_SUCCESS.getCode(),
@@ -363,12 +405,18 @@ public class ComboController {
             summary = "휴지통에서 복구",
             description = """
             휴지통에 있는 조합을 복구한다.
+            본인의 조합만 복구할 수 있다.
             """
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "성공",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "403",
+                    description = "접근 권한이 없음 (본인의 조합이 아님)",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -379,8 +427,9 @@ public class ComboController {
     })
     @PostMapping("/{comboId}/restore")
     public ResponseEntity<ApiResponse<ComboDetailResponseDto>> restoreCombo(
-            @PathVariable Long comboId) {
-        ComboDetailResponseDto result = comboService.restoreCombo(comboId);
+            @PathVariable Long comboId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        ComboDetailResponseDto result = comboService.restoreCombo(comboId, customUserDetails);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.COMBO_RESTORE_SUCCESS.getCode(),
@@ -395,12 +444,18 @@ public class ComboController {
             description = """
             휴지통에 있는 조합을 영구 삭제한다.
             여러 조합을 한 번에 삭제할 수 있다.
+            본인의 조합만 영구 삭제할 수 있다.
             """
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "성공",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "403",
+                    description = "접근 권한이 없음 (본인의 조합이 아님)",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -416,8 +471,9 @@ public class ComboController {
     })
     @DeleteMapping("/trash")
     public ResponseEntity<ApiResponse<Void>> permanentDeleteCombos(
-            @Valid @RequestBody ComboPermanentDeleteRequestDto request) {
-        comboService.permanentDeleteCombos(request.getComboIds());
+            @Valid @RequestBody ComboPermanentDeleteRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        comboService.permanentDeleteCombos(request.getComboIds(), customUserDetails);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.COMBO_PERMANENT_DELETE_SUCCESS.getCode(),
