@@ -34,32 +34,32 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      # ECR 로그인
+      # ECR 로그인 (registry output 얻기)
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push the image to Amazon ECR
+      - name: Build, tag, and push image to ECR (commit tag only)
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
         run: |
+          set -e
           cd devicelife-api
-          IMAGE_TAG=${GITHUB_SHA::7}
 
-          docker build -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} .
-          docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+          IMAGE_TAG="${GITHUB_SHA::7}"
+          IMAGE_URI="${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"
 
-          # develop 최신 태그도 같이 (EC2가 항상 이 태그 pull 하게)
-          docker tag ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} ${ECR_REGISTRY}/${ECR_REPOSITORY}:main-latest
-          docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:main-latest
+          echo "Building image: ${IMAGE_URI}"
 
-          echo "image=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
-          echo "latest_image=${ECR_REGISTRY}/${ECR_REPOSITORY}:main-latest" >> $GITHUB_OUTPUT
+          docker build -t "${IMAGE_URI}" .
+          docker push "${IMAGE_URI}"
+
+          echo "image_uri=${IMAGE_URI}" >> $GITHUB_OUTPUT
           echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
 
-      # EC2 접속해서 배포 실행 + nginx.conf 반영 + reload
+      # EC2 배포
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -68,23 +68,26 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             set -e
-            
-            export IMAGE_TAG="${{ steps.build-image.outputs.image_tag }}"
-            
-            echo "Deploying: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"
 
-            # 1) ECR 로그인
-            aws ecr get-login-password --region ap-northeast-2 \
-              | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com
-            
             cd /home/ec2-user/Backend/devicelife-api
 
-            docker compose pull
-            docker compose up -d --force-recreate
+            # ✅ 이번 배포 커밋 태그
+            IMAGE_TAG="${{ steps.build-image.outputs.image_tag }}"
+            echo "Deploying IMAGE_TAG=${IMAGE_TAG}"
 
-            # 3) nginx.conf 반영
+            # ✅ ECR 로그인 (계정 레지스트리)
+            aws ecr get-login-password --region ap-northeast-2 \
+              | docker login --username AWS --password-stdin \
+                ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com
+
+            # ✅ compose에 IMAGE_TAG 강제 주입 (export 이슈 방지)
+            IMAGE_TAG="$IMAGE_TAG" docker compose pull
+            IMAGE_TAG="$IMAGE_TAG" docker compose up -d --force-recreate
+
+            # ✅ 배포 확인(로그에 남김)
+            docker ps --format "table {{.Names}}\t{{.Image}}\t{{.RunningFor}}"
+
+            # ✅ nginx.conf 반영 + reload
             sudo cp ./nginx/devicelife.conf /etc/nginx/conf.d/devicelife.conf
-
-            # 4) 문법 검사 후 reload
             sudo nginx -t
             sudo systemctl reload nginx
