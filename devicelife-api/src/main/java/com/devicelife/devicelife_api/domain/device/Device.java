@@ -59,10 +59,17 @@ public abstract class Device extends BaseTimeEntity {
     private String modelCode;
 
     /**
-     * 가격 (현재 판매 최저가 또는 출고가, KRW)
+     * 가격 (현재 판매 최저가 또는 출고가)
      */
     @Column(name = "price")
     private Integer price;
+
+    /**
+     * 가격 통화
+     * e.g., "KRW", "USD", "EUR", "JPY"
+     */
+    @Column(name = "priceCurrency", length = 10)
+    private String priceCurrency;
 
     /**
      * 출시일
