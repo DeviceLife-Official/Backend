@@ -68,6 +68,10 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             set -e
+            
+            export IMAGE_TAG="${{ steps.build-image.outputs.image_tag }}"
+            
+            echo "Deploying: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"
 
             # 1) ECR 로그인
             aws ecr get-login-password --region ap-northeast-2 \
