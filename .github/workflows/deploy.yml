@@ -46,17 +46,17 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
         run: |
           cd devicelife-api
-          IMAGE_TAG=$(date -u +"%Y%m%dT%H%M%SZ")
+          IMAGE_TAG=${GITHUB_SHA::7}
 
           docker build -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} .
           docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
 
           # develop 최신 태그도 같이 (EC2가 항상 이 태그 pull 하게)
-          docker tag ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} ${ECR_REGISTRY}/${ECR_REPOSITORY}:develop-latest
-          docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:develop-latest
+          docker tag ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} ${ECR_REGISTRY}/${ECR_REPOSITORY}:main-latest
+          docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:main-latest
 
           echo "image=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
-          echo "latest_image=${ECR_REGISTRY}/${ECR_REPOSITORY}:develop-latest" >> $GITHUB_OUTPUT
+          echo "latest_image=${ECR_REGISTRY}/${ECR_REPOSITORY}:main-latest" >> $GITHUB_OUTPUT
 
       # EC2 접속해서 배포 실행 + nginx.conf 반영 + reload
       - name: Deploy to EC2
