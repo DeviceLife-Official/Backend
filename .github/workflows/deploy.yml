@@ -57,6 +57,7 @@ jobs:
 
           echo "image=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
           echo "latest_image=${ECR_REGISTRY}/${ECR_REPOSITORY}:main-latest" >> $GITHUB_OUTPUT
+          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
 
       # EC2 접속해서 배포 실행 + nginx.conf 반영 + reload
       - name: Deploy to EC2
@@ -72,10 +73,15 @@ jobs:
             aws ecr get-login-password --region ap-northeast-2 \
               | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com
 
-            # 2) compose로 최신 이미지 pull & 재기동
+            cat > .env <<EOF
+            ECR_REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com
+            ECR_REPOSITORY=${{ secrets.REPO_NAME }}
+            IMAGE_TAG=${{ github.sha }}
+            EOF
+            
             cd /home/ec2-user/Backend/devicelife-api
-            docker compose -f docker-compose.yml pull
-            docker compose -f docker-compose.yml up -d
+            docker compose pull
+            docker compose up -d --force-recreate
 
             # 3) nginx.conf 반영
             sudo cp ./nginx/devicelife.conf /etc/nginx/conf.d/devicelife.conf
