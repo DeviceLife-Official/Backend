@@ -57,7 +57,7 @@ public class AuthService {
                 .orElseThrow(() -> new CustomException(USER_4041));
 
         if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())){
-            throw new CustomException(USER_4001);
+            throw new CustomException(USER_4006);
         }
 
         CustomUserDetails userDetails = new CustomUserDetails(user);

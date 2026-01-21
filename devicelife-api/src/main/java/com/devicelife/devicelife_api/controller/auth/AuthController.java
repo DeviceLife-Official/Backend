@@ -4,6 +4,10 @@ import com.devicelife.devicelife_api.common.response.ApiResponse;
 import com.devicelife.devicelife_api.domain.user.dto.AuthDto;
 import com.devicelife.devicelife_api.service.auth.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,18 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "성공 ",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4001",
+                    description = "이미 중복되는 email (중복금지)",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            )
+    })
     @PostMapping("/join")
     @Operation(summary = "회원가입 API", description = "아이디(이메일), 비밀번호, 닉네임, 전화번호 입력")
     public ApiResponse<AuthDto.joinResDto> join(@RequestBody @Valid AuthDto.joinReqDto dto) {
@@ -35,6 +51,23 @@ public class AuthController {
                 authService.join(dto));
     }
 
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "성공 ",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4041",
+                    description = "해당 email을 사용하는 사용자가 없음",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4006",
+                    description = "비밀번호 불일치",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            )
+    })
     @PostMapping("/login")
     @Operation(summary = "로그인 API", description = "아이디(이메일), 비밀번호 입력")
     public ApiResponse<AuthDto.loginResDto> login(@RequestBody @Valid AuthDto.loginReqDto dto) {
@@ -45,6 +78,24 @@ public class AuthController {
         );
     }
 
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "성공 ",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4012",
+                    description = "유효하지 않은 토큰",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4013",
+                    description = "이미 로그아웃 처리된 토큰이거나 존재하지 않는 토큰",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            )
+    })
+    @SecurityRequirement(name = "JWT TOKEN")
     @PostMapping("/refresh")
     @Operation(summary = "accessToken 재발급 API", description = "리프레시 토큰을 통해 엑세스 토큰 재발급")
     public ApiResponse<AuthDto.refreshResDto> refresh(@RequestHeader("refreshToken") String refreshToken) {
@@ -54,6 +105,14 @@ public class AuthController {
                 authService.refresh(refreshToken));
     }
 
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "성공 ",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            )
+    })
+    @SecurityRequirement(name = "JWT TOKEN")
     @PostMapping("/logout")
     @Operation(summary = "로그아웃 API", description = "로그아웃 API 호출 시 DB 내 리프레시 토큰 정보 삭제")
     public ApiResponse<Void> logout(@RequestHeader("refreshToken") String refreshToken) {
