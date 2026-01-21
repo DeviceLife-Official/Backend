@@ -5,6 +5,10 @@ import com.devicelife.devicelife_api.common.security.CustomUserDetails;
 import com.devicelife.devicelife_api.domain.user.dto.MyPageProfileDto;
 import com.devicelife.devicelife_api.service.mypageprofile.MypageProfileService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,7 @@ import static com.devicelife.devicelife_api.common.response.SuccessCode.USER_200
 
 @RestController
 @RequiredArgsConstructor
+@SecurityRequirement(name = "JWT TOKEN")
 @RequestMapping("/api/mypage")
 public class MyPageProfileController {
 
@@ -41,6 +46,38 @@ public class MyPageProfileController {
                 mypageProfileService.myProfileInfo(customUserDetails));
     }
 
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "성공 ",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4041",
+                    description = "해당 email을 사용하는 사용자가 없음",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4004",
+                    description = "닉네임 미입력",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4002",
+                    description = "이메일 미입력",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4003",
+                    description = "소셜 유저의 경우 email 수정 불가",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4009",
+                    description = "이미 사용중인 email",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            )
+    })
     @PatchMapping("/user-profile")
     @Operation(summary = "프로필 수정 API", description = """
             - 닉네임, 이메일, 라이프스타일 태그 수정
@@ -59,6 +96,33 @@ public class MyPageProfileController {
                 mypageProfileService.modifyMyProfileInfo(dto,customUserDetails));
     }
 
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "성공 ",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4005",
+                    description = "소셜 로그인으로 신규 가입한 유저는 비밀번호 존재 X",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4006",
+                    description = "기존 비밀번호 일치 X",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4007",
+                    description = "새 비밀번호와 새 비밀번호 확인 미일치",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4008",
+                    description = "새 비밀번호는 기존 비밀번호와 다르게 설정해야함",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            )
+    })
     @PutMapping("/user-profile/password")
     @Operation(summary = "비밀번호 수정 API", description = """
             기존 비밀번호, 새 비밀번호, 새 비밀번호 확인
