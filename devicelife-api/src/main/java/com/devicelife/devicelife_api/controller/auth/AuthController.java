@@ -58,6 +58,27 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "REQ_4002",
+                    description = "옳지 않은 형식의 email",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            )
+    })
+    @PostMapping("/join/email")
+    @Operation(summary = "이메일 중복확인 API", description = "사용 가능한 이메일이면 true 반환, 중복된 이메일이면 false 반환, 이메일 형식이 옳지 않으면 예외 처리")
+    public ApiResponse<AuthDto.emailDupCheckResDto> emailDupCheck(@RequestBody @Valid AuthDto.emailDupCheckReqDto dto) {
+        return ApiResponse.success(
+                USER_2003.getCode(),
+                USER_2003.getMessage(),
+                authService.emailDupCheck(dto));
+    }
+
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "성공 ",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "USER_4041",
                     description = "해당 email을 사용하는 사용자가 없음",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))

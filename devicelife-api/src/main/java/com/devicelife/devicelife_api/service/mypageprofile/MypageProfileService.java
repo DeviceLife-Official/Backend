@@ -40,7 +40,7 @@ public class MypageProfileService {
         List<String> lifestyleList = userTagRepository.findTagLabelsByUserIdOrderByTagLableAsc(user.getUserId());
 
         return MyPageProfileDto.myProfileResDto.builder()
-                .nickname(user.getNickname())
+                .username(user.getUsername())
                 .email(user.getEmail())
                 .createdAt(user.getCreatedAt())
                 .lifestyleList(lifestyleList)
@@ -55,10 +55,10 @@ public class MypageProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(USER_4041));
 
-        if (req.getNickname() != null) {
-            String nickname = req.getNickname().trim();
+        if (req.getUsername() != null) {
+            String nickname = req.getUsername().trim();
             if (nickname.isEmpty()) {throw new CustomException(USER_4004);}
-            user.setNickname(nickname);
+            user.setUsername(nickname);
         }
 
         if (req.getEmail() != null) {
@@ -112,7 +112,7 @@ public class MypageProfileService {
         userRepository.save(user);
 
         return MyPageProfileDto.myProfileModifyResDto.builder()
-                .nickname(user.getNickname())
+                .username(user.getUsername())
                 .email(user.getEmail())
                 .lifestyleList(tagLabels)
                 .build();

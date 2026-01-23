@@ -24,13 +24,6 @@ public class AuthDto {
         String password;
 
         @NotBlank
-        @Size(min = 2, max = 10)
-        @Pattern(
-                regexp = "^[가-힣a-zA-Z0-9]+$",
-                message = "닉네임은 한글, 영문, 숫자만 가능합니다.")
-        String nickname;
-
-        @NotBlank
         String username;
 
         @NotBlank
@@ -46,6 +39,23 @@ public class AuthDto {
     @AllArgsConstructor
     public static class joinResDto {
         Long userId;
+    }
+
+    @Getter
+    @Setter
+    public static class emailDupCheckReqDto {
+
+        @NotBlank
+        @Email(message = "이메일 형식이 올바르지 않습니다.")
+        String email;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class emailDupCheckResDto {
+        Boolean success;
     }
 
     @Getter

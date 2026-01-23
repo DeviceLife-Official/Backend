@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.devicelife.devicelife_api.common.security.oauth2.domain.RandomNickname.generateTempNickname;
 
 @RequiredArgsConstructor
 @Service
@@ -64,7 +63,6 @@ public class GoogleOAuth2UserService
                                     .username(name)
                                     .providerId(providerId)
                                     .provider(provider)
-                                    .nickname(generateTempNickname())
                             .build());
 
                     attrs.put("oauth_result", OAuthResult.NEW_SIGNUP.name());
