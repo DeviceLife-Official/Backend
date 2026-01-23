@@ -146,14 +146,14 @@ public class AuthController {
                 null);
     }
 
-/*
+
     @GetMapping("find-id")
     @Operation(summary = "아이디 찾기 API", description = "이름, 전화번호 입력")
     public ApiResponse<AuthDto.findIdResDto> findId(@RequestBody @Valid AuthDto.findIdReqDto dto) {
         return ApiResponse.success(
                 USER_2003.getCode(),
                 USER_2003.getMessage(),
-                authService.login(dto)
+                authService.findId(dto)
         );
-    }*/
+    }
 }

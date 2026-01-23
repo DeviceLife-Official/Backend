@@ -110,11 +110,16 @@ public class AuthService {
         refreshTokenRepository.deleteByTokenHash(sha256.encrypt(refreshToken));
     }
 
-/*
+
     public AuthDto.findIdResDto findId(AuthDto.findIdReqDto req) {
 
         User user = userRepository.findByUsernameAndPhoneNumber(req.getUsername(), req.getPhoneNumber())
                 .orElseThrow(() -> new CustomException(USER_4041));
 
-    }*/
+        String email = user.getEmail();
+
+        return AuthDto.findIdResDto.builder()
+                .emailInfo(email)
+                .build();
+    }
 }
