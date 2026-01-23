@@ -37,7 +37,6 @@ public class AuthService {
         User newUser = User.builder()
                 .username(req.getUsername())
                 .passwordHash(passwordEncoder.encode(req.getPassword()))
-                .nickname(req.getNickname())
                 .email(req.getEmail())
                 .role(UserRole.USER)
                 .onboardingCompleted(false)
@@ -48,6 +47,15 @@ public class AuthService {
 
         return AuthDto.joinResDto.builder()
                 .userId(user.getUserId())
+                .build();
+    }
+
+    public AuthDto.emailDupCheckResDto emailDupCheck(AuthDto.emailDupCheckReqDto req) {
+
+        Boolean success = !userRepository.existsByEmail(req.getEmail());
+
+        return AuthDto.emailDupCheckResDto.builder()
+                .success(success)
                 .build();
     }
 

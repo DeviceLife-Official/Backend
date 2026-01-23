@@ -17,7 +17,7 @@ public class MyPageProfileDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class myProfileResDto {
-        String nickname;
+        String username;
         LocalDateTime createdAt;
         String email;
         List<String> lifestyleList;
@@ -27,7 +27,7 @@ public class MyPageProfileDto {
     @Getter
     @Setter
     public static class myProfileModifyReqDto {
-        String nickname;
+        String username;
         @Email(message = "이메일 형식이 올바르지 않습니다.")
         String email;
         List<String> lifestyleList;
@@ -38,7 +38,7 @@ public class MyPageProfileDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class myProfileModifyResDto {
-        String nickname;
+        String username;
         String email;
         List<String> lifestyleList;
     }
