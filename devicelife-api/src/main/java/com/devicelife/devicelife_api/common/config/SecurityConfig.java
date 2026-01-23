@@ -34,6 +34,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin((auth) -> auth.disable())
                 .httpBasic((auth) -> auth.disable())
@@ -49,8 +50,8 @@ public class SecurityConfig {
                                 "/api/tags/**",
                                 "/api/auth/refresh",
                                 "/api/tags/logout",
-                                "api/onboarding/**",
-                                "api/mypage/**"
+                                "/api/onboarding/**",
+                                "/api/mypage/**"
                                 ).authenticated()
                         .anyRequest().permitAll()
                 )
