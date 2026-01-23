@@ -103,7 +103,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(java.util.List.of(
                 "http://localhost:5173",
                 "https://devicelife.site",
-                "https://www.devicelife.site"
+                "https://www.devicelife.site",
                 "https://api.devicelife.site"
         ));
         config.setAllowedMethods(java.util.List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
