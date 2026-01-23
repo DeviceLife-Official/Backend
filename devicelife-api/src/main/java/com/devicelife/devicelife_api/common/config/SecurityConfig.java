@@ -52,7 +52,7 @@ public class SecurityConfig {
                                 "api/onboarding/**",
                                 "api/mypage/**"
                                 ).authenticated()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) -> {
