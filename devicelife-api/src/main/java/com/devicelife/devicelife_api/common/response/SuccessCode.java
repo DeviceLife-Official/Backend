@@ -65,6 +65,8 @@ public enum SuccessCode {
     INQUIRY_LIST_SUCCESS("INQUIRY_2002", "문의 목록 조회에 성공했습니다."),
     INQUIRY_STATUS_CHANGE_SUCCESS("INQUIRY_2003", "문의 상태 변경에 성공했습니다."),
     INQUIRY_DELETE_SUCCESS("INQUIRY_2004", "문의 삭제에 성공했습니다."),
+
+    MAIL_SEND_SUCCESS("MAIL_2000","메일 전송에 성공했습니다.")
     ;
 
 

@@ -65,6 +65,10 @@ public enum ErrorCode {
 
     // Inquiry 관련 오류(INQUIRY_XXXX)
     INQUIRY_4041("INQUIRY_4041", 404, "문의를 찾을 수 없습니다."),
+
+    // Mail 관련 오류(MAIL_XXXX)
+    MAIL_4001("MAIL_4001",400,"인증번호 재전송 횟수를 초과했습니다. 잠시 후 다시 시도해 주세요."),
+    MAIL_4002("MAIL_4002",400,"너무 자주 요청했습니다. 잠시 후 다시 시도해 주세요."),
     ;
 
     private final String code;

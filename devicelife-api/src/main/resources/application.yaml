@@ -36,6 +36,19 @@ spring:
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: devicetest@gmail.com
+    password: "kyhv cxrm huly gjly"
+    properties:
+      mail:
+        smtp:
+          auth: true # 5
+          timeout: 5000 # 6
+          starttls:
+            enable: true # 7
+
 jwt:
   token:
     secretKey: ${JWT_SECRET_KEY}
@@ -45,6 +58,9 @@ jwt:
 
 server:
   port: 8080
+  servlet:
+    session:
+      timeout: 5m
 
 internal:
   admin-token: ${INTERNAL_ADMIN_TOKEN:}
