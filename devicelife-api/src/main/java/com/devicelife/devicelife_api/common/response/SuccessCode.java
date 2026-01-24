@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 public enum SuccessCode {
 
-    COMMON_2001("COMMON_2001", "요청 처리에 성공했습니다."),
+    g("COMMON_2001", "요청 처리에 성공했습니다."),
 
     // 예시: 사용자
     USER_2001("USER_2001", "회원가입에 성공했습니다."),
@@ -66,7 +66,9 @@ public enum SuccessCode {
     INQUIRY_STATUS_CHANGE_SUCCESS("INQUIRY_2003", "문의 상태 변경에 성공했습니다."),
     INQUIRY_DELETE_SUCCESS("INQUIRY_2004", "문의 삭제에 성공했습니다."),
 
-    MAIL_SEND_SUCCESS("MAIL_2000","메일 전송에 성공했습니다.")
+    MAIL_SEND_SUCCESS("MAIL_2000","메일 전송에 성공했습니다."),
+
+    VERIFY_SUCCESS("MAIL_2001", "인증에 성공했습니다."),
     ;
 
 

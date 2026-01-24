@@ -1,20 +1,22 @@
 package com.devicelife.devicelife_api.common.mail;
 
 import com.devicelife.devicelife_api.common.exception.CustomException;
-import com.devicelife.devicelife_api.common.exception.ErrorCode;
 import com.devicelife.devicelife_api.domain.user.AuthProvider;
 import com.devicelife.devicelife_api.domain.user.User;
 import com.devicelife.devicelife_api.domain.user.dto.AuthDto;
 import com.devicelife.devicelife_api.repository.user.UserRepository;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.UUID;
 
 import static com.devicelife.devicelife_api.common.exception.ErrorCode.*;
 
@@ -23,6 +25,7 @@ import static com.devicelife.devicelife_api.common.exception.ErrorCode.*;
 public class MailService {
     private final JavaMailSender mailSender;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private static final Duration CODE_TTL = Duration.ofMinutes(3);
     private static final Duration VERIFIED_TTL = Duration.ofMinutes(10);
 
@@ -46,7 +49,6 @@ public class MailService {
                               padding:12px 16px;border:1px solid #ddd;display:inline-block">
                     %s
                   </div>
-                  <p style="color:#666;margin-top:16px">본인이 요청하지 않았다면 이 메일을 무시해 주세요.</p>
                 </div>
             """.formatted(code);
 
@@ -57,7 +59,16 @@ public class MailService {
         }
     }
 
-    public void sendCodeMail(AuthDto.findPasswordReqDto req, HttpSession session) {
+
+    private PwResetSession getSessionOrThrow(HttpSession session) {
+        PwResetSession st = (PwResetSession) session.getAttribute(PwResetSession.KEY);
+        if (st == null || st.email == null) {
+            throw new IllegalArgumentException("세션이 만료되었거나 잘못된 접근입니다.");
+        }
+        return st;
+    }
+
+    public void sendCodeMail(AuthDto.sendMailReqDto req, HttpSession session) {
 
         String email = req.getEmail();
         User user = userRepository.findByEmail(email)
@@ -96,5 +107,62 @@ public class MailService {
         session.setAttribute(PwResetSession.KEY, ns);
 
         sendResetCodeMail(email, code);
+    }
+
+    public AuthDto.verifyCodeResDto verifyCodeMail(AuthDto.verifyCodeReqDto req, HttpSession session) {
+
+        PwResetSession st = getSessionOrThrow(session);
+
+        Instant now = Instant.now();
+        if (st.codeExpiresAt == null || now.isAfter(st.codeExpiresAt)) {
+            throw new CustomException(MAIL_4003);
+        }
+        if (st.tries >= MAX_TRIES) {
+            throw new CustomException(MAIL_4004);
+        }
+
+        st.tries++;
+        String inputHash = ResetCodeUtil.sha256(req.getCode());
+        if (!inputHash.equals(st.code)) {
+            session.setAttribute(PwResetSession.KEY, st);
+            throw new CustomException(MAIL_4005);
+        }
+
+        // 성공 -> verifiedToken 발급
+        st.verifiedToken = UUID.randomUUID().toString();
+        st.verifiedExpiresAt = now.plus(VERIFIED_TTL);
+
+        // 코드 재사용 방지
+        st.code = null;
+        st.codeExpiresAt = null;
+
+        session.setAttribute(PwResetSession.KEY, st);
+
+        return AuthDto.verifyCodeResDto.builder()
+                .verifyToken(st.verifiedToken)
+                .build();
+    }
+
+    @Transactional
+    public void resetPassword(AuthDto.resetPasswordReqDto req, HttpSession session) {
+
+        PwResetSession st = getSessionOrThrow(session);
+        Instant now = Instant.now();
+
+        if (st.verifiedToken == null || st.verifiedExpiresAt == null) {
+        throw new CustomException(AUTH_4011);
+        }
+        if (now.isAfter(st.verifiedExpiresAt)) {
+            throw new CustomException(AUTH_4191);
+        }
+        if (!st.verifiedToken.equals(req.getVerifiedToken())) {
+            throw new CustomException(AUTH_4012);
+        }
+
+        User user = userRepository.findByEmail(st.email)
+                .orElseThrow(() -> new CustomException(USER_4041));
+
+        user.setPasswordHash(passwordEncoder.encode(req.getNewPassword()));
+        session.removeAttribute(PwResetSession.KEY);
     }
 }
