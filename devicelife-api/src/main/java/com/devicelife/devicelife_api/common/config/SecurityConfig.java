@@ -60,14 +60,14 @@ public class SecurityConfig {
                             res.setStatus(401);
                             res.setContentType("application/json;charset=UTF-8");
                             res.getWriter().write("""
-                {"isSuccess":false,"code":"AUTH_401","message":"인증이 필요합니다.","result":null,"error":null}
+                {"code":"AUTH_401","message":"인증이 필요합니다.","error":null,"success":false}
               """);
                         })
                         .accessDeniedHandler((req, res, e) -> {
                             res.setStatus(403);
                             res.setContentType("application/json;charset=UTF-8");
                             res.getWriter().write("""
-                {"isSuccess":false,"code":"AUTH_403","message":"권한이 없습니다.","result":null,"error":null}
+                {"code":"AUTH_403","message":"권한이 없습니다.","error":null,"success":false}
               """);
                         }))
 
