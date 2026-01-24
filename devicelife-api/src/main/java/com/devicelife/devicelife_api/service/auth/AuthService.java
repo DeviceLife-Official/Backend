@@ -11,12 +11,14 @@ import com.devicelife.devicelife_api.domain.user.dto.AuthDto;
 import com.devicelife.devicelife_api.repository.user.RefreshTokenRepository;
 import com.devicelife.devicelife_api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.devicelife.devicelife_api.common.exception.ErrorCode.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -93,7 +95,10 @@ public class AuthService {
             throw new CustomException(AUTH_4013);
         }
 
-        User user = userRepository.findByEmail(jwtUtil.getEmail(refreshToken))
+        String email = jwtUtil.getEmail(refreshToken);
+        log.info("refresh sub={}", email);
+
+        User user = userRepository.findByUserId(jwtUtil.getUserId(refreshToken))
                 .orElseThrow(() -> new CustomException(USER_4041));
 
         CustomUserDetails userDetails = new CustomUserDetails(user);
@@ -108,6 +113,10 @@ public class AuthService {
     public void logout(String refreshToken) {
 
         refreshTokenRepository.deleteByTokenHash(sha256.encrypt(refreshToken));
+    }
+
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
     }
 
 /*
