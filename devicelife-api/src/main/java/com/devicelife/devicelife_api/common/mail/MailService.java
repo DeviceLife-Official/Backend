@@ -55,7 +55,7 @@ public class MailService {
             helper.setText(html, true);
             mailSender.send(message);
         } catch (Exception e) {
-            throw new RuntimeException("메일 전송 실패", e);
+            throw new CustomException(MAIL_5001);
         }
     }
 
@@ -63,7 +63,7 @@ public class MailService {
     private PwResetSession getSessionOrThrow(HttpSession session) {
         PwResetSession st = (PwResetSession) session.getAttribute(PwResetSession.KEY);
         if (st == null || st.email == null) {
-            throw new IllegalArgumentException("세션이 만료되었거나 잘못된 접근입니다.");
+            throw new CustomException(MAIL_4191);
         }
         return st;
     }
@@ -74,7 +74,7 @@ public class MailService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(USER_4041));
 
-        if (user.getProvider()!= AuthProvider.GENERAL) {
+        if (user.getPasswordHash()==null) {
             throw new CustomException(USER_4005);
         }
 
@@ -87,7 +87,7 @@ public class MailService {
                 throw new CustomException(MAIL_4001);
             }
             if (now.isBefore(st.lastSentAt.plus(RESEND_COOLDOWN))) {
-                throw new CustomException(MAIL_4001);
+                throw new CustomException(MAIL_4002);
             }
         }
 

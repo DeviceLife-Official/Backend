@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 public enum SuccessCode {
 
-    g("COMMON_2001", "요청 처리에 성공했습니다."),
+    COMMON_2001("COMMON_2001", "요청 처리에 성공했습니다."),
 
     // 예시: 사용자
     USER_2001("USER_2001", "회원가입에 성공했습니다."),
