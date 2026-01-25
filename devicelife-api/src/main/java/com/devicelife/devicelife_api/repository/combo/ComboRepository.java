@@ -1,7 +1,9 @@
 package com.devicelife.devicelife_api.repository.combo;
 
 import com.devicelife.devicelife_api.domain.combo.Combo;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -34,4 +36,24 @@ public interface ComboRepository extends JpaRepository<Combo, Long> {
      */
     @Query("SELECT c FROM Combo c WHERE c.deletedAt IS NOT NULL AND c.deletedAt < :threshold")
     List<Combo> findCombosToAutoDelete(@Param("threshold") LocalDateTime threshold);
+
+    Optional<Combo> findByComboId(Long comboId);
+
+    @Query("""
+        select distinct c
+        from Combo c
+        join fetch c.comboDevices cd
+        join fetch cd.device d
+        where c.comboId = :comboId
+          and c.deletedAt is null
+    """)
+    Optional<Combo> findWithComboDevices(@Param("comboId") Long comboId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+        select c from Combo c
+        left join fetch c.currentEvaluation
+        where c.comboId = :comboId
+    """)
+    Optional<Combo> findByIdForUpdate(@Param("comboId") Long comboId);
 }
