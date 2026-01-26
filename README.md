@@ -39,24 +39,44 @@
 
 ## 🏗️ 인프라 구조 (Infrastructure Architecture)
 ![img.png](img.png)
+
+> **💡 핵심 아키텍처 포인트 (Key Architecture Decisions)**
+> **1. 비동기/이벤트 기반 아키텍처 (Event-Driven Architecture with SQS)**
+> * **도입 배경:** 디바이스 호환성 평가 알고리즘은 복잡한 연산을 포함하고 있어, 동기 처리 시 API 응답 속도 저하와 타임아웃 위험이 있었습니다.
+> * **해결:** **AWS SQS**를 도입하여 평가 작업을 큐(Queue)로 분리하고, 별도의 **Worker** 서버가 이를 비동기로 처리하도록 설계했습니다. 이를 통해 **API 서버의 부하를 격리하고 트래픽 급증 시에도 안정적인 사용자 경험**을 보장합니다.
+> * 👉 **[Evaluation Worker Repository](https://github.com/DeviceLife-Official/Worker)**
+>
+>
+> **2. Tailscale 기반의 제로 트러스트 보안망 (Secure Internal Network)**
+> * **도입 배경:** 클라우드(AWS EC2)와 온프레미스/별도 VM(Worker) 간의 통신을 위해 공용 인터넷망에 포트를 개방하는 것은 보안상 취약점이 될 수 있었습니다.
+> * **해결:** **Tailscale VPN**을 활용하여 외부망과 격리된 **암호화 사설망(Overlay Network)**을 구축했습니다. **Backend(8080 포트)를 Public IP로 개방하지 않고도** 안전하게 Worker와 통신할 수 있는 강력한 보안 환경을 구성했습니다.
+>
+>
+> **3. Discord 기반의 ChatOps 환경 구축 (Server-side Admin Console via Discord)**
+> * **도입 배경:** 프로젝트 초기 단계에서 별도의 웹 기반 Admin(관리자) 페이지를 구축하는 것은 개발 리소스 낭비가 큽니다. 하지만 팀원들이 '추천 세트' 데이터를 조회하고 수정할 수 있는 공통의 운영 도구가 절실했습니다.
+> * **해결:** **Spring Boot 애플리케이션 내부에 JDA(Java Discord API)를 내장**하여, Discord를 실시간 운영 콘솔(Ops Console)로 변모시켰습니다.
+> * **Slash Command 활용:** `/device-search`(기기 조회), `/featured-set`(추천 세트 등록) 등의 명령어를 통해 DB에 직접 접근하여 운영 데이터를 제어합니다.
+> * **운영 효율성:** 프론트엔드 개발 없이도 운영팀(팀원)이 Discord 채널에서 실시간으로 데이터를 검증(QA)하고, **Role 기반 권한 관리**를 통해 안전하게 운영 액션을 수행하는 **ChatOps** 환경을 구현했습니다.
+>
+>
+>
+>
 ---
 
 ## 🌐 Git-flow 전략 (Git-flow Strategy)
 
 * main: 최종적으로 사용자에게 배포되는 가장 안정적인 버전 브랜치
-* develop: 다음 출시 버전을 개발하는 중심 브랜치. 기능 개발 완료 후 feature 브랜치들이 병합
-* feature: 기능 개발용 브랜치. develop에서 분기하여 작업
+* feature: 기능 개발용 브랜치. main에서 분기하여 작업
 
 ---
 
 ## 📌 브랜치 규칙 및 네이밍 (Branch Rules & Naming)
 
-* 모든 기능 개발은 feature 브랜치에서 시작
-* 작업 시작 전, 항상 최신 develop 내용 받아오기 (git pull origin develop)
-* 작업 완료 후, develop으로 Pull Request(PR) 생성
+* 작업 시작 전, 항상 최신 main 내용 받아오기 (git pull origin main)
+* 작업 완료 후, main으로 Pull Request(PR) 생성
 * PR에 Reviewer(멘션) 지정 이후 머지
-* 브랜치 이름 형식: feature/이슈번호-기능명
-* 예시: feature/2-combination-api
+* 브랜치 이름 형식: feat/이슈번호-기능명
+* 예시: feat/2-combination-api
 
 ---
 
