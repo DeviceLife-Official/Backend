@@ -8,6 +8,16 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-2
+      credentials:
+        access-key: ${AWS_ACCESS_KEY_ID}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+      sqs:
+        enabled: true
+
   jpa:
     hibernate:
       ddl-auto: validate
@@ -48,6 +58,9 @@ spring:
           timeout: 5000 # 6
           starttls:
             enable: true # 7
+custom:
+  sqs:
+    queue-name: device-life-evaluation-queue
 
 jwt:
   token:
