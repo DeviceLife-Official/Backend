@@ -55,7 +55,7 @@ public class SecurityConfig {
                                 "/api/mypage/**"
                                 ).authenticated()
                         .requestMatchers("/internal/**").access(new WebExpressionAuthorizationManager(
-                                "hasIpAddress('100.64.0.0/10') or hasIpAddress('127.0.0.1')"
+                                "hasIpAddress('100.64.0.0/10') or hasIpAddress('127.0.0.1') or hasIpAddress('::1')"
                         ))
                         .anyRequest().permitAll()
                 )
