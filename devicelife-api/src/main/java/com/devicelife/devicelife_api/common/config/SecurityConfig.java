@@ -54,10 +54,10 @@ public class SecurityConfig {
                                 "/api/onboarding/**",
                                 "/api/mypage/**"
                                 ).authenticated()
-                        .requestMatchers("/internal/**")
-                        .access(new WebExpressionAuthorizationManager(
-                                "hasIpAddress('100.64.0.0/10') or hasIpAddress('127.0.0.1') or hasIpAddress('::1')"
-                        ))
+                        .requestMatchers("/internal/**").permitAll()
+                        //.access(new WebExpressionAuthorizationManager(
+                                //"hasIpAddress('100.64.0.0/10') or hasIpAddress('127.0.0.1') or hasIpAddress('::1')"
+                        //))
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex
