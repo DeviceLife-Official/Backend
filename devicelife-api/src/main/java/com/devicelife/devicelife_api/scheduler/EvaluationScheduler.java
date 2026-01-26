@@ -55,7 +55,7 @@ public class EvaluationScheduler {
         try {
             // 평가 ID 생성 (임시로 타임스탬프 or DB에서 생성 후 가져오기)
             // 실제로는 여기서 Evaluation 엔티티를 'PENDING' 상태로 DB에 저장하고 그 ID를 써야 함
-            Long evaluationId = System.currentTimeMillis();
+            Long evaluationId = comboId;
 
             // 메시지 생성 (DTO 패키지 경로에 맞게 수정)
             JobMessage message = new JobMessage(evaluationId, 0L, "CREATE");
