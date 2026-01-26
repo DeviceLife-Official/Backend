@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -65,12 +67,18 @@ public class Combo extends BaseTimeEntity {
     @Column(name = "evaluatedAt")
     private LocalDateTime evaluatedAt;
 
-    @Column(name = "evaluationVersion", length = 20, nullable = false)
+    //@Column(name = "evaluationVersion", length = 20, nullable = false)
+    @Column(name = "evaluationVersion", insertable = false)
     @Builder.Default
-    private String evaluationVersion = "v1";
+    private Long evaluationVersion = 0L;
+    //private String evaluationVersion = "v1";
 
     @Column(name = "deletedAt")
     private LocalDateTime deletedAt;
+
+    @OneToMany(mappedBy = "combo", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<ComboDevice> comboDevices = new ArrayList<>();
 
     // 비즈니스 로직 메서드
 
@@ -139,6 +147,13 @@ public class Combo extends BaseTimeEntity {
      */
     public boolean isPinned() {
         return this.pinnedAt != null;
+    }
+
+    public void applyEvaluation(Evaluation evaluation) {
+        this.currentEvaluation = evaluation;
+        this.currentEvaluationId = evaluation.getEvaluationId();
+        this.currentTotalScore = evaluation.getTotalScore();
+        this.evaluatedAt = LocalDateTime.now();
     }
 }
 

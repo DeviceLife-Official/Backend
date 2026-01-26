@@ -33,8 +33,8 @@ public class Evaluation {
     @JoinColumn(name = "comboId", nullable = false)
     private Combo combo;
 
-    @Column(name = "version", length = 20, nullable = false)
-    private String version;
+    @Column(name = "version", nullable = false)
+    private Long version;
 
     @Column(name = "totalScore", precision = 6, scale = 2, nullable = false)
     private BigDecimal totalScore;
@@ -48,8 +48,8 @@ public class Evaluation {
     @Column(name = "scoreC", precision = 6, scale = 2)
     private BigDecimal scoreC;
 
-    @Column(name = "scoreD", precision = 6, scale = 2)
-    private BigDecimal scoreD;
+    //@Column(name = "scoreD", precision = 6, scale = 2)
+    //private BigDecimal scoreD;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "reportJson", columnDefinition = "json")
