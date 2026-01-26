@@ -26,7 +26,6 @@ import static com.devicelife.devicelife_api.common.response.SuccessCode.COMMON_2
 )
 @RestController
 @RequiredArgsConstructor
-@SecurityRequirement(name = "JWT TOKEN")
 @RequestMapping("/internal/evaluations")
 public class EvaluationController {
 

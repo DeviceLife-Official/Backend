@@ -16,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -43,7 +44,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-resources/**",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                ""
                         ).permitAll()
                         .requestMatchers(
                                 "/api/combos/**",
@@ -53,6 +55,9 @@ public class SecurityConfig {
                                 "/api/onboarding/**",
                                 "/api/mypage/**"
                                 ).authenticated()
+                        .requestMatchers("/internal/**").access(new WebExpressionAuthorizationManager(
+                                "hasIpAddress('100.64.0.0/10') or hasIpAddress('127.0.0.1')"
+                        ))
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex
