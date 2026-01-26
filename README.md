@@ -17,9 +17,10 @@
 ## 🧑🏻‍💻 팀원 (Contributors)
 
 | <img src="https://github.com/weeeeestern.png" width="150" height="150"/> | <img src="https://github.com/nsh0919.png" width="150" height="150"/> | <img src="https://github.com/LABYRINTH3.png" width="150" height="150"/> | <img src="https://github.com/ccjngwn.png" width="150" height="150"/> |
-| :---------------------------------------------------------------: | :---------------------------------------------------------------: | :---------------------------------------------------------------: | :---------------------------------------------------------------: |
-| 박은서 <br/> [@weeeeestern](https://github.com/weeeeestern) | 남성현 <br/> [@nsh0919](https://github.com/nsh0919) | 이태훈 <br/> [@LABYRINTH3](https://github.com/LABYRINTH3) | 채정원 <br/> [@ccjngwn](https://github.com/ccjngwn) |
-| **Backend Lead** | **Backend** | **Backend** | **Backend** |
+|:------------------------------------------------------------------------:|:--------------------------------------------------------------------:|:-----------------------------------------------------------------------:|:--------------------------------------------------------------------:|
+|         박은서 <br/> [@weeeeestern](https://github.com/weeeeestern)         |           남성현 <br/> [@nsh0919](https://github.com/nsh0919)           |         이태훈 <br/> [@LABYRINTH3](https://github.com/LABYRINTH3)          |           채정원 <br/> [@ccjngwn](https://github.com/ccjngwn)           |
+|                             **Backend Lead**                             |                             **Backend**                              |                               **Backend**                               |                             **Backend**                              |
+|                        온보딩, 조합 평가 로직, 시스템 설계 및 배포                        |                       인증, 조합 평가 로직, 배포 및 CICD                        |                         기기 데이터 크롤링, 조합 관리, 휴지통                          |                        이미지 데이터 크롤링, 고객 지원 콘텐츠                        |
 
 ---
 
