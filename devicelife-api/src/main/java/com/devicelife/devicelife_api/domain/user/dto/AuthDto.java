@@ -126,4 +126,13 @@ public class AuthDto {
         String emailInfo;
     }
 
+    @Getter
+    @Setter
+    public static class userDeleteReqDto {
+
+        @NotBlank
+        @Email(message = "이메일 형식이 올바르지 않습니다.")
+        String email;
+    }
+
 }
