@@ -148,9 +148,9 @@ public class AuthController {
 
     @DeleteMapping("/delete/{userId}")
     @Operation(summary = "유저삭제 API (연동용 API 아님)", description = "테스트 후 유저 데이터 삭제를 위한 API")
-    public ApiResponse<Void> deleteUser(@PathVariable Long userId) {
+    public ApiResponse<Void> deleteUser(@PathVariable String email) {
 
-        authService.deleteUser(userId);
+        authService.deleteUser(email);
 
         return ApiResponse.success(
                 COMMON_2001.getCode(),
