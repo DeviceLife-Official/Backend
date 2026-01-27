@@ -115,8 +115,8 @@ public class AuthService {
         refreshTokenRepository.deleteByTokenHash(sha256.encrypt(refreshToken));
     }
 
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+    public void deleteUser(String email) {
+        userRepository.deleteByEmail(email);
     }
 
     public AuthDto.findIdResDto findId(AuthDto.findIdReqDto req) {
