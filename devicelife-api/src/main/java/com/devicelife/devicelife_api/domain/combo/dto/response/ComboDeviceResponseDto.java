@@ -14,6 +14,7 @@ public class ComboDeviceResponseDto {
     private String brandName;      // 브랜드명
     private String deviceType;     // 디바이스 타입 (SMARTPHONE, LAPTOP 등)
     private Integer price;         // 가격
+    private String priceCurrency;  // 가격 통화 (KRW, USD, EUR 등)
     private String imageUrl;       // 이미지 URL
     private LocalDateTime addedAt; // 추가 일시
 }

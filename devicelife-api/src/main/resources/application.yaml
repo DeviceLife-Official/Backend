@@ -83,3 +83,8 @@ discord:
   guild-id: ${DISCORD_GUILD_ID:}
   admin-role-name: ${DISCORD_ADMIN_ROLE:admin}
 
+currency:
+  exchange-rate-api:
+    key: ${EXCHANGE_RATE_API_KEY:}
+    url: https://v6.exchangerate-api.com/v6
+
