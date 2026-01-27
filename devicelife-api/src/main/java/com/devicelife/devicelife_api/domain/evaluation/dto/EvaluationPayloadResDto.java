@@ -19,6 +19,7 @@ public class EvaluationPayloadResDto {
     private Long evaluationVersion;
     private String jobId;
     private List<DeviceDto> devices;
+    private List<String> lifestyles;
 
     /* =========================
      * Device wrapper
