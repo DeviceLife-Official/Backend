@@ -3,6 +3,7 @@ package com.devicelife.devicelife_api.service.combo;
 import com.devicelife.devicelife_api.common.exception.CustomException;
 import com.devicelife.devicelife_api.common.exception.ErrorCode;
 import com.devicelife.devicelife_api.common.security.CustomUserDetails;
+import com.devicelife.devicelife_api.common.util.CurrencyConverter;
 import com.devicelife.devicelife_api.domain.combo.Combo;
 import com.devicelife.devicelife_api.domain.combo.ComboDevice;
 import com.devicelife.devicelife_api.domain.combo.ComboDeviceId;
@@ -31,6 +32,7 @@ public class ComboService {
     private final ComboRepository comboRepository;
     private final ComboDeviceRepository comboDeviceRepository;
     private final EntityManager em;
+    private final CurrencyConverter currencyConverter;
 
     /**
      * 조합 생성
@@ -86,6 +88,7 @@ public class ComboService {
                         .deviceType(cd.getDevice().getDeviceType() != null 
                                 ? cd.getDevice().getDeviceType().getDisplayName() : null)
                         .price(cd.getDevice().getPrice())
+                        .priceCurrency(cd.getDevice().getPriceCurrency())
                         .imageUrl(cd.getDevice().getImageUrl())
                         .addedAt(cd.getAddedAt())
                         .build())
@@ -344,11 +347,19 @@ public class ComboService {
 
     /**
      * 조합의 총 가격 업데이트
+     * 각 기기의 가격을 통화별로 KRW로 변환하여 합산합니다.
      */
     private void updateComboTotalPrice(Combo combo) {
         List<ComboDevice> comboDevices = comboDeviceRepository.findAllByComboId(combo.getComboId());
         Integer totalPrice = comboDevices.stream()
-                .map(cd -> cd.getDevice().getPrice() != null ? cd.getDevice().getPrice() : 0)
+                .map(cd -> {
+                    Device device = cd.getDevice();
+                    Integer price = device.getPrice();
+                    String currency = device.getPriceCurrency();
+                    
+                    // 가격을 KRW로 변환
+                    return currencyConverter.convertToKRW(price, currency);
+                })
                 .reduce(0, Integer::sum);
 
         combo.updateTotalPrice(totalPrice);
