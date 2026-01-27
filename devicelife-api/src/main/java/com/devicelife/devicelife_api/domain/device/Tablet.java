@@ -91,6 +91,12 @@ public class Tablet extends Device {
     private Boolean hasCellular;
 
     /**
+     * 무게 (그램)
+     */
+    @Column(name = "weightGram")
+    private Integer weightGram;
+
+    /**
      * Apple Pencil 호환 여부
      */
     public boolean supportsApplePencil() {
