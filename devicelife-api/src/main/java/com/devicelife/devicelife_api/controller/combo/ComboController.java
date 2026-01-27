@@ -8,6 +8,7 @@ import com.devicelife.devicelife_api.domain.combo.dto.request.ComboDeviceAddRequ
 import com.devicelife.devicelife_api.domain.combo.dto.request.ComboPermanentDeleteRequestDto;
 import com.devicelife.devicelife_api.domain.combo.dto.request.ComboUpdateRequestDto;
 import com.devicelife.devicelife_api.domain.combo.dto.response.*;
+import com.devicelife.devicelife_api.scheduler.EvaluationScheduler;
 import com.devicelife.devicelife_api.service.combo.ComboService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -40,6 +41,7 @@ import java.util.List;
 public class ComboController {
 
     private final ComboService comboService;
+    private final EvaluationScheduler evaluationScheduler;
 
     // ========== 조합 기본 CRUD ==========
 
@@ -284,7 +286,8 @@ public class ComboController {
             조합에 기기를 추가한다.
             이미 추가된 기기는 중복 추가할 수 없다.
             총 가격이 자동으로 업데이트된다.
-            본인의 조합에만 기기를 추가할 수 있다.
+            본인의 조합에만 기기를 추가할 수 있다. 
+            + 3초 디바운싱 기능 有 (은서 구현)
             """
     )
     @ApiResponses({
@@ -315,6 +318,10 @@ public class ComboController {
             @Valid @RequestBody ComboDeviceAddRequestDto request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         ComboDetailResponseDto result = comboService.addDeviceToCombo(comboId, request, customUserDetails);
+
+        // 2.  [추가] "방금 수정됨! 카운트다운 시작해!"
+        evaluationScheduler.scheduleEvaluation(comboId);
+
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.COMBO_DEVICE_ADD_SUCCESS.getCode(),
@@ -330,6 +337,7 @@ public class ComboController {
             조합에서 기기를 삭제한다.
             총 가격이 자동으로 업데이트된다.
             본인의 조합에서만 기기를 삭제할 수 있다.
+            + 3초 디바운싱 기능 추가 (은서 구현)
             """
     )
     @ApiResponses({
@@ -361,6 +369,10 @@ public class ComboController {
             @PathVariable Long deviceId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         ComboDetailResponseDto result = comboService.removeDeviceFromCombo(comboId, deviceId, customUserDetails);
+
+        // 2. [추가] "방금 수정됨! 카운트다운 시작해!"
+        evaluationScheduler.scheduleEvaluation(comboId);
+
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.COMBO_DEVICE_REMOVE_SUCCESS.getCode(),

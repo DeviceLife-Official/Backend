@@ -128,6 +128,43 @@ public class AuthDto {
 
     @Getter
     @Setter
+    public static class sendMailReqDto {
+
+        @NotBlank
+        @Email(message = "이메일 형식이 올바르지 않습니다.")
+        String email;
+    }
+
+    @Getter
+    @Setter
+    public static class verifyCodeReqDto {
+        String code;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class verifyCodeResDto {
+        String verifyToken;
+    }
+
+    @Getter
+    @Setter
+    public static class resetPasswordReqDto {
+        String verifiedToken;
+        @NotBlank
+        @Size(min = 8, max = 20)
+        @Pattern(
+                regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#$%^&*()_+=-]*$",
+                message = "비밀번호는 영문과 숫자를 포함해야 하고 8~20자여야합니다.")
+        String newPassword;
+    }
+
+
+
+    @Getter
+    @Setter
     public static class userDeleteReqDto {
 
         @NotBlank

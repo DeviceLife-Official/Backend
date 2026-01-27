@@ -16,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -34,6 +35,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin((auth) -> auth.disable())
                 .httpBasic((auth) -> auth.disable())
@@ -49,9 +51,13 @@ public class SecurityConfig {
                                 "/api/tags/**",
                                 "/api/auth/refresh",
                                 "/api/tags/logout",
-                                "api/onboarding/**",
-                                "api/mypage/**"
+                                "/api/onboarding/**",
+                                "/api/mypage/**"
                                 ).authenticated()
+                        .requestMatchers("/internal/**").permitAll()
+                        //.access(new WebExpressionAuthorizationManager(
+                                //"hasIpAddress('100.64.0.0/10') or hasIpAddress('127.0.0.1') or hasIpAddress('::1')"
+                        //))
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex
@@ -59,14 +65,14 @@ public class SecurityConfig {
                             res.setStatus(401);
                             res.setContentType("application/json;charset=UTF-8");
                             res.getWriter().write("""
-                {"isSuccess":false,"code":"AUTH_401","message":"인증이 필요합니다.","result":null,"error":null}
+                {"code":"AUTH_401","message":"인증이 필요합니다.","error":null,"success":false}
               """);
                         })
                         .accessDeniedHandler((req, res, e) -> {
                             res.setStatus(403);
                             res.setContentType("application/json;charset=UTF-8");
                             res.getWriter().write("""
-                {"isSuccess":false,"code":"AUTH_403","message":"권한이 없습니다.","result":null,"error":null}
+                {"code":"AUTH_403","message":"권한이 없습니다.","error":null,"success":false}
               """);
                         }))
 
@@ -102,8 +108,8 @@ public class SecurityConfig {
         config.setAllowedOrigins(java.util.List.of(
                 "http://localhost:5173",
                 "https://devicelife.site",
-                "https://www.devicelife.site"
-                //"https://api.devicelife.site"
+                "https://www.devicelife.site",
+                "https://api.devicelife.site"
         ));
         config.setAllowedMethods(java.util.List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         config.setAllowedHeaders(java.util.List.of("*"));
