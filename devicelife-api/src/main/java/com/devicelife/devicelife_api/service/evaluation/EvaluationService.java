@@ -1,7 +1,6 @@
 package com.devicelife.devicelife_api.service.evaluation;
 
 import com.devicelife.devicelife_api.common.exception.CustomException;
-import com.devicelife.devicelife_api.common.security.CustomUserDetails;
 import com.devicelife.devicelife_api.domain.combo.Combo;
 import com.devicelife.devicelife_api.domain.combo.ComboDevice;
 import com.devicelife.devicelife_api.domain.device.*;
@@ -13,6 +12,7 @@ import com.devicelife.devicelife_api.repository.device.*;
 import com.devicelife.devicelife_api.repository.evaluation.EvaluationRepository;
 import com.devicelife.devicelife_api.repository.combo.ComboRepository;
 import com.devicelife.devicelife_api.repository.tag.UserTagRepository;
+import com.devicelife.devicelife_api.repository.user.UserRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,14 +40,17 @@ public class EvaluationService {
     private final ChargerRepository chargerRepository;
     private final SmartwatchRepository smartwatchRepository;
     private final AudioRepository audioRepository;
+    private final UserRepository userRepository;
 
-    public EvaluationPayloadResDto getDevicesData (Long comboId, CustomUserDetails cud) {
+    public EvaluationPayloadResDto getDevicesData (Long comboId) {
 
-        User user = cud.getUser();
-        List<String> lifestyle = userTagRepository.findTagLabelsByUserIdOrderByTagLableAsc(user.getUserId());
 
         Combo combo = comboRepository.findByComboId(comboId)
                 .orElseThrow(() -> new CustomException(COMBO_4041));
+
+        User user = combo.getUser();
+
+        List<String> lifestyle = userTagRepository.findTagLabelsByUserIdOrderByTagLabelAsc(user.getUserId());
 
         List<EvaluationPayloadResDto.DeviceDto> devices = combo.getComboDevices().stream()
                 .map(ComboDevice::getDevice)

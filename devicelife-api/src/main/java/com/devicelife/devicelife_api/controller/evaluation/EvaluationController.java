@@ -56,13 +56,14 @@ public class EvaluationController {
     })
     @GetMapping("/{combinationId}/payload")
     public ApiResponse<EvaluationPayloadResDto> getData(
-            @PathVariable Long combinationId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @PathVariable Long combinationId
+            //@AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
 
         return ApiResponse.success(
                 COMBO_LIST_SUCCESS.getCode(),
                 COMBO_LIST_SUCCESS.getMessage(),
-                evaluationService.getDevicesData(combinationId, customUserDetails));
+                evaluationService.getDevicesData(combinationId));
     }
 
     @Operation(
