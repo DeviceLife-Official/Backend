@@ -31,7 +31,7 @@ public interface UserTagRepository extends JpaRepository<UserTag, UserTagId> {
         where ut.user.userId = :userId
         order by ut.tag.tagLabel asc
     """)
-    List<String> findTagLabelsByUserIdOrderByTagLableAsc(
+    List<String> findTagLabelsByUserIdOrderByTagLabelAsc(
             @Param("userId") Long userId);
 
     void deleteAllByUser(User user);

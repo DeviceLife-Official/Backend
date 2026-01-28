@@ -37,7 +37,7 @@ public class MypageProfileService {
 
         User user = cud.getUser();
 
-        List<String> lifestyleList = userTagRepository.findTagLabelsByUserIdOrderByTagLableAsc(user.getUserId());
+        List<String> lifestyleList = userTagRepository.findTagLabelsByUserIdOrderByTagLabelAsc(user.getUserId());
 
         return MyPageProfileDto.myProfileResDto.builder()
                 .username(user.getUsername())
@@ -108,7 +108,7 @@ public class MypageProfileService {
                 userTagRepository.saveAll(userTags);
             }
         }
-        List<String> tagLabels = userTagRepository.findTagLabelsByUserIdOrderByTagLableAsc(userId);
+        List<String> tagLabels = userTagRepository.findTagLabelsByUserIdOrderByTagLabelAsc(userId);
         userRepository.save(user);
 
         return MyPageProfileDto.myProfileModifyResDto.builder()

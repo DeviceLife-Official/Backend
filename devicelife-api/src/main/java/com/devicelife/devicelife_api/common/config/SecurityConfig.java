@@ -1,11 +1,13 @@
 package com.devicelife.devicelife_api.common.config;
 
+import com.devicelife.devicelife_api.common.security.InternalTokenAuthFilter;
 import com.devicelife.devicelife_api.common.security.JwtAuthFilter;
 import com.devicelife.devicelife_api.common.security.JwtUtil;
 import com.devicelife.devicelife_api.common.security.oauth2.OAuth2SuccessHandler;
 import com.devicelife.devicelife_api.common.security.oauth2.OAuth2UserProviderRouter;
 import com.devicelife.devicelife_api.service.auth.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -31,6 +33,9 @@ public class SecurityConfig {
     private final OAuth2UserProviderRouter oAuth2UserProviderRouter;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
+    @Value("${INTERNAL_API_TOKEN}")
+    private String internalApiToken;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -39,6 +44,7 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin((auth) -> auth.disable())
                 .httpBasic((auth) -> auth.disable())
+                .addFilterBefore(internalTokenAuthFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(
@@ -54,7 +60,8 @@ public class SecurityConfig {
                                 "/api/onboarding/**",
                                 "/api/mypage/**"
                                 ).authenticated()
-                        .requestMatchers("/internal/**").permitAll()
+                        .requestMatchers("/internal/**").hasRole("INTERNAL")
+                        //.requestMatchers("/internal/**").permitAll()
                         //.access(new WebExpressionAuthorizationManager(
                                 //"hasIpAddress('100.64.0.0/10') or hasIpAddress('127.0.0.1') or hasIpAddress('::1')"
                         //))
@@ -100,6 +107,11 @@ public class SecurityConfig {
     @Bean
     public JwtAuthFilter jwtAuthFilter() {
         return new JwtAuthFilter(jwtUtil, customUserDetailsService);
+    }
+
+    @Bean
+    public InternalTokenAuthFilter internalTokenAuthFilter() {
+        return new InternalTokenAuthFilter(internalApiToken);
     }
 
     @Bean
