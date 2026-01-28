@@ -1,6 +1,7 @@
 package com.devicelife.devicelife_api.controller.evaluation;
 
 import com.devicelife.devicelife_api.common.response.ApiResponse;
+import com.devicelife.devicelife_api.common.security.CustomUserDetails;
 import com.devicelife.devicelife_api.domain.evaluation.dto.EvaluationDto;
 import com.devicelife.devicelife_api.domain.evaluation.dto.EvaluationPayloadResDto;
 import com.devicelife.devicelife_api.service.evaluation.EvaluationService;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static com.devicelife.devicelife_api.common.response.SuccessCode.COMBO_LIST_SUCCESS;
@@ -26,6 +28,7 @@ import static com.devicelife.devicelife_api.common.response.SuccessCode.COMMON_2
 )
 @RestController
 @RequiredArgsConstructor
+@SecurityRequirement(name = "JWT TOKEN")
 @RequestMapping("/internal/evaluations")
 public class EvaluationController {
 
@@ -52,12 +55,14 @@ public class EvaluationController {
             )
     })
     @GetMapping("/{combinationId}/payload")
-    public ApiResponse<EvaluationPayloadResDto> getData(@PathVariable Long combinationId) {
+    public ApiResponse<EvaluationPayloadResDto> getData(
+            @PathVariable Long combinationId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         return ApiResponse.success(
                 COMBO_LIST_SUCCESS.getCode(),
                 COMBO_LIST_SUCCESS.getMessage(),
-                evaluationService.getDevicesData(combinationId));
+                evaluationService.getDevicesData(combinationId, customUserDetails));
     }
 
     @Operation(
