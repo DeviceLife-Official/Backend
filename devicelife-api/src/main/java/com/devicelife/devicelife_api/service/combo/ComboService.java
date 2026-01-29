@@ -46,6 +46,11 @@ public class ComboService {
             throw new CustomException(ErrorCode.USER_4041);
         }
 
+        // 중복 조합명 체크 (활성 조합 중에서)
+        if (comboRepository.existsByUserIdAndComboNameAndDeletedAtIsNull(userId, request.getComboName())) {
+            throw new CustomException(ErrorCode.COMBO_4005);
+        }
+
         Combo combo = Combo.builder()
                 .user(user)
                 .comboName(request.getComboName())
@@ -160,6 +165,11 @@ public class ComboService {
 
         // 권한 검사: 본인의 조합인지 확인
         validateComboOwnership(combo, cud.getId());
+
+        // 중복 조합명 체크 (자기 자신을 제외하고 다른 활성 조합들 중에서)
+        if (comboRepository.existsByUserIdAndComboNameExcludingComboId(cud.getId(), request.getComboName(), comboId)) {
+            throw new CustomException(ErrorCode.COMBO_4005);
+        }
 
         combo.updateComboName(request.getComboName());
 
