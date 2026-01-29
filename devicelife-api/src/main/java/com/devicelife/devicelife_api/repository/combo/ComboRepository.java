@@ -56,4 +56,16 @@ public interface ComboRepository extends JpaRepository<Combo, Long> {
         where c.comboId = :comboId
     """)
     Optional<Combo> findByIdForUpdate(@Param("comboId") Long comboId);
+
+    /**
+     * 사용자의 활성 조합 중 동일한 이름이 존재하는지 확인 (삭제되지 않은 것만)
+     */
+    @Query("SELECT COUNT(c) > 0 FROM Combo c WHERE c.userId = :userId AND c.comboName = :comboName AND c.deletedAt IS NULL")
+    boolean existsByUserIdAndComboNameAndDeletedAtIsNull(@Param("userId") Long userId, @Param("comboName") String comboName);
+
+    /**
+     * 사용자의 활성 조합 중 특정 조합을 제외하고 동일한 이름이 존재하는지 확인 (삭제되지 않은 것만)
+     */
+    @Query("SELECT COUNT(c) > 0 FROM Combo c WHERE c.userId = :userId AND c.comboName = :comboName AND c.comboId <> :comboId AND c.deletedAt IS NULL")
+    boolean existsByUserIdAndComboNameExcludingComboId(@Param("userId") Long userId, @Param("comboName") String comboName, @Param("comboId") Long comboId);
 }
