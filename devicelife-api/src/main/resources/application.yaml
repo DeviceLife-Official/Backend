@@ -74,6 +74,10 @@ server:
   servlet:
     session:
       timeout: 5m
+      cookie:
+        same-site: none
+        secure: true
+        http-only: true
 
 internal:
   admin-token: ${INTERNAL_ADMIN_TOKEN:}

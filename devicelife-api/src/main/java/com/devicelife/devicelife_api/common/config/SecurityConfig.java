@@ -22,6 +22,8 @@ import org.springframework.security.web.access.expression.WebExpressionAuthoriza
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.List;
+
 @EnableWebSecurity
 @EnableMethodSecurity
 @Configuration
@@ -125,8 +127,9 @@ public class SecurityConfig {
         ));
         config.setAllowedMethods(java.util.List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         config.setAllowedHeaders(java.util.List.of("*"));
+        config.setAllowedOrigins(List.of("https://devicelife.site", "http://localhost:5173"));
         config.setAllowCredentials(true);
-        config.setExposedHeaders(java.util.List.of("Authorization", "Location"));
+        config.setExposedHeaders(java.util.List.of("Authorization", "Location", "Set-Cookie"));
 
         var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
