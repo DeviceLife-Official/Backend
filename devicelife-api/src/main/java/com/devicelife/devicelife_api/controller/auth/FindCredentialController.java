@@ -47,7 +47,12 @@ public class FindCredentialController {
                     responseCode = "REQ_4002",
                     description = "전화번호는 숫자만 입력해야 합니다.",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
-            )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4005",
+                    description = "소셜 로그인으로 신규 가입한 유저는 비밀번호가 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
     })
     @PostMapping("/find-id")
     @Operation(summary = "아이디 찾기 API", description = "이름, 전화번호 입력")
@@ -88,6 +93,11 @@ public class FindCredentialController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "MAIL_5001",
                     description = "메일 전송 실패하였습니다.",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "USER_4005",
+                    description = "소셜 로그인으로 신규 가입한 유저는 비밀번호가 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             )
     })

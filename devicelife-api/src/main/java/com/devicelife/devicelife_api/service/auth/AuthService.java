@@ -124,6 +124,10 @@ public class AuthService {
         User user = userRepository.findByUsernameAndPhoneNumber(req.getUsername(), req.getPhoneNumber())
                 .orElseThrow(() -> new CustomException(USER_4041));
 
+        if (user.getPasswordHash()==null) {
+            throw new CustomException(USER_4005);
+        }
+
         String email = user.getEmail();
 
         return AuthDto.findIdResDto.builder()
