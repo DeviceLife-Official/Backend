@@ -127,7 +127,6 @@ public class SecurityConfig {
         ));
         config.setAllowedMethods(java.util.List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         config.setAllowedHeaders(java.util.List.of("*"));
-        config.setAllowedOrigins(List.of("https://devicelife.site", "http://localhost:5173"));
         config.setAllowCredentials(true);
         config.setExposedHeaders(java.util.List.of("Authorization", "Location", "Set-Cookie"));
 
