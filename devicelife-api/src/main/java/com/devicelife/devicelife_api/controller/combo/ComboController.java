@@ -128,6 +128,7 @@ public class ComboController {
             description = """
             특정 사용자의 활성 조합 목록을 조회한다. (삭제되지 않은 조합만)
             즐겨찾기가 있으면 상단에 표시된다.
+            각 조합에 포함된 기기 목록도 함께 반환한다.
             """
     )
     @ApiResponses({
