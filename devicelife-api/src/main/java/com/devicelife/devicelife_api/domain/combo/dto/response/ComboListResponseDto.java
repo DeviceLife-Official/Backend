@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -18,4 +19,5 @@ public class ComboListResponseDto {
     private Integer deviceCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<ComboDeviceResponseDto> devices;
 }

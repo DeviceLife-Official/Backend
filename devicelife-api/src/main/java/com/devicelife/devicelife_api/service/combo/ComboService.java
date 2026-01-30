@@ -139,7 +139,23 @@ public class ComboService {
 
         return combos.stream()
                 .map(combo -> {
-                    Long deviceCount = comboDeviceRepository.countByComboId(combo.getComboId());
+                    List<ComboDevice> comboDevices = comboDeviceRepository.findAllByComboId(combo.getComboId());
+                    
+                    List<ComboDeviceResponseDto> deviceDtos = comboDevices.stream()
+                            .map(cd -> ComboDeviceResponseDto.builder()
+                                    .deviceId(cd.getDevice().getDeviceId())
+                                    .name(cd.getDevice().getName())
+                                    .modelCode(cd.getDevice().getModelCode())
+                                    .brandName(cd.getDevice().getBrand().getBrandName())
+                                    .deviceType(cd.getDevice().getDeviceType() != null 
+                                            ? cd.getDevice().getDeviceType().getDisplayName() : null)
+                                    .price(cd.getDevice().getPrice())
+                                    .priceCurrency(cd.getDevice().getPriceCurrency())
+                                    .imageUrl(cd.getDevice().getImageUrl())
+                                    .addedAt(cd.getAddedAt())
+                                    .build())
+                            .collect(Collectors.toList());
+                    
                     return ComboListResponseDto.builder()
                             .comboId(combo.getComboId())
                             .comboName(combo.getComboName())
@@ -147,9 +163,10 @@ public class ComboService {
                             .pinnedAt(combo.getPinnedAt())
                             .totalPrice(combo.getTotalPrice())
                             .currentTotalScore(combo.getCurrentTotalScore())
-                            .deviceCount(deviceCount.intValue())
+                            .deviceCount(comboDevices.size())
                             .createdAt(combo.getCreatedAt())
                             .updatedAt(combo.getUpdatedAt())
+                            .devices(deviceDtos)
                             .build();
                 })
                 .collect(Collectors.toList());
