@@ -162,7 +162,13 @@ public class MailService {
         User user = userRepository.findByEmail(st.email)
                 .orElseThrow(() -> new CustomException(USER_4041));
 
-        user.setPasswordHash(passwordEncoder.encode(req.getNewPassword()));
+        String newPassword = passwordEncoder.encode(req.getNewPassword());
+
+        if (passwordEncoder.matches(req.getNewPassword(), user.getPasswordHash())) {
+            throw new CustomException(USER_4008);
+        }
+
+        user.setPasswordHash(newPassword);
         session.removeAttribute(PwResetSession.KEY);
     }
 }
