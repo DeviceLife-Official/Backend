@@ -3,6 +3,7 @@ package com.devicelife.devicelife_api.controller.device;
 import com.devicelife.devicelife_api.common.response.ApiResponse;
 import com.devicelife.devicelife_api.common.response.SuccessCode;
 import com.devicelife.devicelife_api.domain.device.dto.response.DeviceSearchResponseDto;
+import com.devicelife.devicelife_api.domain.device.enums.DeviceSortType;
 import com.devicelife.devicelife_api.domain.device.enums.DeviceType;
 import com.devicelife.devicelife_api.service.device.DeviceQueryService;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,10 @@ public class DeviceController implements DeviceControllerDocs {
         @Override
         @GetMapping("/search")
         public ApiResponse<DeviceSearchResponseDto> searchDevices(
+                        String keyword,
                         String cursor,
                         Integer size,
+                        DeviceSortType sortType,
                         List<DeviceType> deviceTypes,
                         Integer minPrice,
                         Integer maxPrice,
@@ -34,7 +37,8 @@ public class DeviceController implements DeviceControllerDocs {
         ) {
 
                 DeviceSearchResponseDto result = deviceQueryService.searchDevices(
-                                cursor, size, deviceTypes, minPrice, maxPrice, brandIds);
+                        keyword, cursor, size, sortType, deviceTypes, minPrice, maxPrice, brandIds
+                );
 
                 return ApiResponse.success(
                                 SuccessCode.DEVICE_SEARCH_SUCCESS.getCode(),

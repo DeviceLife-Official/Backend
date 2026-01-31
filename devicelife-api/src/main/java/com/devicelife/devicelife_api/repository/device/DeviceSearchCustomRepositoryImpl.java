@@ -1,12 +1,15 @@
 package com.devicelife.devicelife_api.repository.device;
 
 import com.devicelife.devicelife_api.domain.device.dto.response.DeviceItemDto;
+import com.devicelife.devicelife_api.domain.device.enums.DeviceSortType;
 import com.devicelife.devicelife_api.domain.device.enums.DeviceType;
+import com.devicelife.devicelife_api.service.device.DeviceQueryService.CursorData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,14 +25,16 @@ public class DeviceSearchCustomRepositoryImpl implements DeviceSearchCustomRepos
 
     @Override
     public List<DeviceItemDto> searchDevices(
-            Long cursor,
+            String keyword,
+            CursorData cursorData,
             int size,
+            DeviceSortType sortType,
             List<DeviceType> deviceTypes,
             Integer minPrice,
             Integer maxPrice,
             List<Long> brandIds) {
         // 1. 기본 정보 조회 (Paging, Filtering 포함)
-        List<DeviceItemDto> devices = findBasicDevices(cursor, size, deviceTypes, minPrice, maxPrice, brandIds);
+        List<DeviceItemDto> devices = findBasicDevices(keyword, cursorData, size, sortType, deviceTypes, minPrice, maxPrice, brandIds);
 
         if (devices.isEmpty()) {
             return devices;
@@ -60,8 +65,10 @@ public class DeviceSearchCustomRepositoryImpl implements DeviceSearchCustomRepos
      * 동적 쿼리 빌드로 인덱스 활용 최적화
      */
     private List<DeviceItemDto> findBasicDevices(
-            Long cursor,
+            String keyword,
+            CursorData cursorData,
             int size,
+            DeviceSortType sortType,
             List<DeviceType> deviceTypes,
             Integer minPrice,
             Integer maxPrice,
@@ -86,9 +93,15 @@ public class DeviceSearchCustomRepositoryImpl implements DeviceSearchCustomRepos
         params.addValue("limit", size + 1);
 
         // 동적 조건 추가 (파라미터가 있을 때만 조건 추가하여 인덱스 활용)
-        if (cursor != null) {
-            sql.append(" AND d.deviceId < :cursor");
-            params.addValue("cursor", cursor);
+        // 공백 제거 후 비교하여 "갤럭시s25" -> "Galaxy S25" 매칭 가능
+        if (keyword != null && !keyword.isBlank()) {
+            sql.append(" AND LOWER(REPLACE(d.name, ' ', '')) LIKE LOWER(:keyword)");
+            params.addValue("keyword", "%" + keyword.replaceAll("\\s+", "") + "%");
+        }
+
+        // 복합 커서 조건 추가
+        if (cursorData != null) {
+            appendCursorCondition(sql, params, cursorData, sortType);
         }
 
         if (deviceTypes != null && !deviceTypes.isEmpty()) {
@@ -128,9 +141,11 @@ public class DeviceSearchCustomRepositoryImpl implements DeviceSearchCustomRepos
                             OR (d.deviceType = 'MOUSE' AND d.releaseDate >= '2023-01-01')
                             OR (d.deviceType = 'CHARGER' AND d.releaseDate >= '2023-01-01')
                           )
-                        ORDER BY d.deviceId DESC
-                        LIMIT :limit
                         """);
+
+        // 동적 정렬 조건 추가
+        sql.append(" ORDER BY ").append(sortType.getOrderByClause());
+        sql.append(" LIMIT :limit");
 
         return jdbcTemplate.query(sql.toString(), params, (rs, rowNum) -> {
             Long deviceId = rs.getLong("deviceId");
@@ -154,6 +169,65 @@ public class DeviceSearchCustomRepositoryImpl implements DeviceSearchCustomRepos
                     imageUrl,
                     releaseDate); // specifications는 나중에 채움
         });
+    }
+
+    /**
+     * 복합 커서 조건을 쿼리에 추가
+     * 정렬 타입에 따라 다른 커서 조건을 적용
+     */
+    private void appendCursorCondition(StringBuilder sql, MapSqlParameterSource params,
+                                       CursorData cursorData, DeviceSortType sortType) {
+        params.addValue("cursorDeviceId", cursorData.deviceId());
+
+        switch (sortType) {
+            case LATEST -> {
+                // releaseDate DESC, deviceId DESC
+                // (releaseDate < cursorDate) OR (releaseDate = cursorDate AND deviceId < cursorDeviceId)
+                LocalDate cursorDate = LocalDate.parse(cursorData.sortValue());
+                params.addValue("cursorDate", cursorDate);
+                sql.append("""
+                         AND (
+                            d.releaseDate < :cursorDate
+                            OR (d.releaseDate = :cursorDate AND d.deviceId < :cursorDeviceId)
+                         )
+                        """);
+            }
+            case NAME_ASC -> {
+                // name ASC, deviceId ASC
+                // (name > cursorName) OR (name = cursorName AND deviceId > cursorDeviceId)
+                params.addValue("cursorName", cursorData.sortValue());
+                sql.append("""
+                         AND (
+                            d.name > :cursorName
+                            OR (d.name = :cursorName AND d.deviceId > :cursorDeviceId)
+                         )
+                        """);
+            }
+            case PRICE_ASC -> {
+                // price ASC, deviceId ASC
+                // (price > cursorPrice) OR (price = cursorPrice AND deviceId > cursorDeviceId)
+                Integer cursorPrice = Integer.parseInt(cursorData.sortValue());
+                params.addValue("cursorPrice", cursorPrice);
+                sql.append("""
+                         AND (
+                            d.price > :cursorPrice
+                            OR (d.price = :cursorPrice AND d.deviceId > :cursorDeviceId)
+                         )
+                        """);
+            }
+            case PRICE_DESC -> {
+                // price DESC, deviceId DESC
+                // (price < cursorPrice) OR (price = cursorPrice AND deviceId < cursorDeviceId)
+                Integer cursorPrice = Integer.parseInt(cursorData.sortValue());
+                params.addValue("cursorPrice", cursorPrice);
+                sql.append("""
+                         AND (
+                            d.price < :cursorPrice
+                            OR (d.price = :cursorPrice AND d.deviceId < :cursorDeviceId)
+                         )
+                        """);
+            }
+        }
     }
 
     // --- Helper Methods for Enriching Specs ---
