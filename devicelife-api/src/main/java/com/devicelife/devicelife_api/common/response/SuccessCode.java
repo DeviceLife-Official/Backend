@@ -21,6 +21,8 @@ public enum SuccessCode {
     // 예시: 디바이스
     DEVICE_2001("DEVICE_2001", "디바이스 목록 조회에 성공했습니다."),
     DEVICE_2002("DEVICE_2002", "디바이스 상세 조회에 성공했습니다."),
+    DEVICE_SEARCH_SUCCESS("DEVICE_2003", "기기 검색에 성공했습니다."),
+    BRAND_LIST_SUCCESS("BRAND_2001", "브랜드 목록 조회에 성공했습니다."),
 
     // Combo
     COMBO_CREATE_SUCCESS("COMBO_2000", "조합 생성에 성공했습니다."),
@@ -66,11 +68,10 @@ public enum SuccessCode {
     INQUIRY_STATUS_CHANGE_SUCCESS("INQUIRY_2003", "문의 상태 변경에 성공했습니다."),
     INQUIRY_DELETE_SUCCESS("INQUIRY_2004", "문의 삭제에 성공했습니다."),
 
-    MAIL_SEND_SUCCESS("MAIL_2000","메일 전송에 성공했습니다."),
+    MAIL_SEND_SUCCESS("MAIL_2000", "메일 전송에 성공했습니다."),
 
     VERIFY_SUCCESS("MAIL_2001", "인증에 성공했습니다."),
     ;
-
 
     private final String code;
     private final String message;
@@ -80,4 +81,3 @@ public enum SuccessCode {
         this.message = message;
     }
 }
-

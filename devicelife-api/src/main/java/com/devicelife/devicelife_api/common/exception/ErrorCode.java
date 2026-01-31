@@ -36,6 +36,7 @@ public enum ErrorCode {
 
     // Device 관련 오류 (DEVICE_XXXX)
     DEVICE_4041("DEVICE_4041", 404, "기기를 찾을 수 없습니다."),
+    DEVICE_4002("DEVICE_4002", 400, "유효하지 않은 커서입니다."),
 
     // User 관련 오류 (USER_XXXX)
     USER_4041("USER_4041", 404, "사용자를 찾을 수 없습니다."),
@@ -87,4 +88,3 @@ public enum ErrorCode {
         this.message = message;
     }
 }
-
