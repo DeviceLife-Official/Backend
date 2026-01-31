@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,9 +33,10 @@ public class DeviceSearchCustomRepositoryImpl implements DeviceSearchCustomRepos
             List<DeviceType> deviceTypes,
             Integer minPrice,
             Integer maxPrice,
-            List<Long> brandIds) {
+            List<Long> brandIds,
+            Map<String, BigDecimal> exchangeRates) {
         // 1. 기본 정보 조회 (Paging, Filtering 포함)
-        List<DeviceItemDto> devices = findBasicDevices(keyword, cursorData, size, sortType, deviceTypes, minPrice, maxPrice, brandIds);
+        List<DeviceItemDto> devices = findBasicDevices(keyword, cursorData, size, sortType, deviceTypes, minPrice, maxPrice, brandIds, exchangeRates);
 
         if (devices.isEmpty()) {
             return devices;
@@ -61,8 +63,7 @@ public class DeviceSearchCustomRepositoryImpl implements DeviceSearchCustomRepos
 
     /**
      * 1단계: 기본 기기 정보 조회 (Main Query)
-     * devices 테이블과 brands 테이블만 조인하여 가볍게 조회
-     * 동적 쿼리 빌드로 인덱스 활용 최적화
+     * CTE를 사용하여 KRW 환산 가격을 먼저 계산하고, 이를 기반으로 필터링, 정렬, 페이징을 수행합니다.
      */
     private List<DeviceItemDto> findBasicDevices(
             String keyword,
@@ -72,56 +73,61 @@ public class DeviceSearchCustomRepositoryImpl implements DeviceSearchCustomRepos
             List<DeviceType> deviceTypes,
             Integer minPrice,
             Integer maxPrice,
-            List<Long> brandIds) {
+            List<Long> brandIds,
+            Map<String, BigDecimal> exchangeRates) {
 
-        StringBuilder sql = new StringBuilder("""
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        // 모든 통화를 원화로 변환
+        String krwPriceCaseExpression = buildKrwPriceCaseExpression(exchangeRates, params);
+
+        // CTE devices_with_krw 정의 (새로운 krw_price 컬럼 추가)
+        StringBuilder sql = new StringBuilder("WITH devices_with_krw AS ( SELECT d.*, b.brandName, ");
+        sql.append(krwPriceCaseExpression).append(" AS krw_price ");
+        sql.append("FROM devices d JOIN brands b ON d.brandId = b.brandId) ");
+
+        sql.append("""
                 SELECT
-                    d.deviceId,
-                    d.deviceType,
-                    d.name,
-                    d.price,
-                    d.priceCurrency,
-                    d.imageUrl,
-                    d.releaseDate,
-                    b.brandName
-                FROM devices d
-                JOIN brands b ON d.brandId = b.brandId
+                    deviceId,
+                    deviceType,
+                    name,
+                    krw_price as price,
+                    'KRW' as priceCurrency,
+                    imageUrl,
+                    releaseDate,
+                    brandName
+                FROM devices_with_krw
                 WHERE 1=1
                 """);
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("limit", size + 1);
 
-        // 동적 조건 추가 (파라미터가 있을 때만 조건 추가하여 인덱스 활용)
-        // 공백 제거 후 비교하여 "갤럭시s25" -> "Galaxy S25" 매칭 가능
         if (keyword != null && !keyword.isBlank()) {
-            sql.append(" AND LOWER(REPLACE(d.name, ' ', '')) LIKE LOWER(:keyword)");
+            sql.append(" AND LOWER(REPLACE(name, ' ', '')) LIKE LOWER(:keyword)");
             params.addValue("keyword", "%" + keyword.replaceAll("\\s+", "") + "%");
         }
 
-        // 복합 커서 조건 추가
         if (cursorData != null) {
             appendCursorCondition(sql, params, cursorData, sortType);
         }
 
         if (deviceTypes != null && !deviceTypes.isEmpty()) {
-            sql.append(" AND d.deviceType IN (:deviceTypes)");
+            sql.append(" AND deviceType IN (:deviceTypes)");
             List<String> typeNames = deviceTypes.stream().map(Enum::name).toList();
             params.addValue("deviceTypes", typeNames);
         }
 
         if (brandIds != null && !brandIds.isEmpty()) {
-            sql.append(" AND d.brandId IN (:brandIds)");
+            sql.append(" AND brandId IN (:brandIds)");
             params.addValue("brandIds", brandIds);
         }
 
         if (minPrice != null) {
-            sql.append(" AND d.price >= :minPrice");
+            sql.append(" AND krw_price >= :minPrice");
             params.addValue("minPrice", minPrice);
         }
 
         if (maxPrice != null) {
-            sql.append(" AND d.price <= :maxPrice");
+            sql.append(" AND krw_price <= :maxPrice");
             params.addValue("maxPrice", maxPrice);
         }
 
@@ -129,22 +135,22 @@ public class DeviceSearchCustomRepositoryImpl implements DeviceSearchCustomRepos
         sql.append(
                 """
                           AND (
-                            (d.deviceType = 'SMARTPHONE' AND d.releaseDate >= '2021-01-01' AND (
-                                (b.brandName = 'Samsung' AND (d.name LIKE '%Galaxy A%' OR d.name LIKE '%Galaxy S%' OR d.name LIKE '%Galaxy Z%'))
-                                OR (b.brandName = 'Apple')
+                            (deviceType = 'SMARTPHONE' AND releaseDate >= '2021-01-01' AND (
+                                (brandName = 'Samsung' AND (name LIKE '%Galaxy A%' OR name LIKE '%Galaxy S%' OR name LIKE '%Galaxy Z%'))
+                                OR (brandName = 'Apple')
                             ))
-                            OR (d.deviceType = 'LAPTOP' AND d.releaseDate >= '2023-01-01')
-                            OR (d.deviceType = 'TABLET' AND d.releaseDate >= '2023-01-01' AND b.brandName != 'Huawei')
-                            OR (d.deviceType = 'SMARTWATCH' AND d.releaseDate >= '2023-01-01' AND b.brandName IN ('Apple', 'Samsung'))
-                            OR (d.deviceType = 'AUDIO' AND d.releaseDate >= '2023-01-01')
-                            OR (d.deviceType = 'KEYBOARD' AND d.releaseDate >= '2023-01-01')
-                            OR (d.deviceType = 'MOUSE' AND d.releaseDate >= '2023-01-01')
-                            OR (d.deviceType = 'CHARGER' AND d.releaseDate >= '2023-01-01')
+                            OR (deviceType = 'LAPTOP' AND releaseDate >= '2023-01-01')
+                            OR (deviceType = 'TABLET' AND releaseDate >= '2023-01-01' AND brandName != 'Huawei')
+                            OR (deviceType = 'SMARTWATCH' AND releaseDate >= '2023-01-01' AND brandName IN ('Apple', 'Samsung'))
+                            OR (deviceType = 'AUDIO' AND releaseDate >= '2023-01-01')
+                            OR (deviceType = 'KEYBOARD' AND releaseDate >= '2023-01-01')
+                            OR (deviceType = 'MOUSE' AND releaseDate >= '2023-01-01')
+                            OR (deviceType = 'CHARGER' AND releaseDate >= '2023-01-01')
                           )
                         """);
 
-        // 동적 정렬 조건 추가
-        sql.append(" ORDER BY ").append(sortType.getOrderByClause());
+        // 동적 정렬 조건 추가 (krw_price 기준)
+        sql.append(" ORDER BY ").append(sortType.getOrderByClause().replace("price", "krw_price"));
         sql.append(" LIMIT :limit");
 
         return jdbcTemplate.query(sql.toString(), params, (rs, rowNum) -> {
@@ -153,7 +159,9 @@ public class DeviceSearchCustomRepositoryImpl implements DeviceSearchCustomRepos
             DeviceType deviceType = DeviceType.valueOf(deviceTypeStr);
             String brandName = rs.getString("brandName");
             String name = rs.getString("name");
-            Integer price = rs.getInt("price");
+            // krw_price는 BigDecimal로 계산되었을 수 있으므로, getInt 대신 getBigDecimal 후 intValue로 변환
+            BigDecimal priceDecimal = rs.getBigDecimal("price");
+            Integer price = priceDecimal != null ? priceDecimal.intValue() : null;
             String priceCurrency = rs.getString("priceCurrency");
             String imageUrl = rs.getString("imageUrl");
             java.sql.Date releaseDateSql = rs.getDate("releaseDate");
@@ -167,13 +175,34 @@ public class DeviceSearchCustomRepositoryImpl implements DeviceSearchCustomRepos
                     price,
                     priceCurrency,
                     imageUrl,
-                    releaseDate); // specifications는 나중에 채움
+                    releaseDate);
         });
+    }
+
+    private String buildKrwPriceCaseExpression(Map<String, BigDecimal> exchangeRates, MapSqlParameterSource params) {
+        StringBuilder caseBuilder = new StringBuilder("(CASE");
+        // KRW가 아닌 통화에 대해서만 CASE문 생성
+        for (Map.Entry<String, BigDecimal> entry : exchangeRates.entrySet()) {
+            String currency = entry.getKey();
+            if (!"KRW".equalsIgnoreCase(currency)) {
+                String paramName = "rate_" + currency;
+                caseBuilder.append(" WHEN priceCurrency = :").append(paramName).append("_currency THEN price * :").append(paramName);
+                params.addValue(paramName + "_currency", currency);
+                params.addValue(paramName, entry.getValue());
+            }
+        }
+        caseBuilder.append(" ELSE price END)");
+
+        // (CASE
+        // WHEN priceCurrency = :rate_EUR_currency THEN price * : rate_EUR
+        // WHEN priceCurrency = :rate_USD_currency THEN price * : rate_USD
+        // ELSE price END)
+        return caseBuilder.toString();
     }
 
     /**
      * 복합 커서 조건을 쿼리에 추가
-     * 정렬 타입에 따라 다른 커서 조건을 적용
+     * 정렬 타입에 따라 다른 커서 조건을 적용 (가격 정렬 시 krw_price 사용)
      */
     private void appendCursorCondition(StringBuilder sql, MapSqlParameterSource params,
                                        CursorData cursorData, DeviceSortType sortType) {
@@ -181,51 +210,23 @@ public class DeviceSearchCustomRepositoryImpl implements DeviceSearchCustomRepos
 
         switch (sortType) {
             case LATEST -> {
-                // releaseDate DESC, deviceId DESC
-                // (releaseDate < cursorDate) OR (releaseDate = cursorDate AND deviceId < cursorDeviceId)
                 LocalDate cursorDate = LocalDate.parse(cursorData.sortValue());
                 params.addValue("cursorDate", cursorDate);
-                sql.append("""
-                         AND (
-                            d.releaseDate < :cursorDate
-                            OR (d.releaseDate = :cursorDate AND d.deviceId < :cursorDeviceId)
-                         )
-                        """);
+                sql.append(" AND (releaseDate < :cursorDate OR (releaseDate = :cursorDate AND deviceId < :cursorDeviceId))");
             }
             case NAME_ASC -> {
-                // name ASC, deviceId ASC
-                // (name > cursorName) OR (name = cursorName AND deviceId > cursorDeviceId)
                 params.addValue("cursorName", cursorData.sortValue());
-                sql.append("""
-                         AND (
-                            d.name > :cursorName
-                            OR (d.name = :cursorName AND d.deviceId > :cursorDeviceId)
-                         )
-                        """);
+                sql.append(" AND (name > :cursorName OR (name = :cursorName AND deviceId > :cursorDeviceId))");
             }
             case PRICE_ASC -> {
-                // price ASC, deviceId ASC
-                // (price > cursorPrice) OR (price = cursorPrice AND deviceId > cursorDeviceId)
                 Integer cursorPrice = Integer.parseInt(cursorData.sortValue());
                 params.addValue("cursorPrice", cursorPrice);
-                sql.append("""
-                         AND (
-                            d.price > :cursorPrice
-                            OR (d.price = :cursorPrice AND d.deviceId > :cursorDeviceId)
-                         )
-                        """);
+                sql.append(" AND (krw_price > :cursorPrice OR (krw_price = :cursorPrice AND deviceId > :cursorDeviceId))");
             }
             case PRICE_DESC -> {
-                // price DESC, deviceId DESC
-                // (price < cursorPrice) OR (price = cursorPrice AND deviceId < cursorDeviceId)
                 Integer cursorPrice = Integer.parseInt(cursorData.sortValue());
                 params.addValue("cursorPrice", cursorPrice);
-                sql.append("""
-                         AND (
-                            d.price < :cursorPrice
-                            OR (d.price = :cursorPrice AND d.deviceId < :cursorDeviceId)
-                         )
-                        """);
+                sql.append(" AND (krw_price < :cursorPrice OR (krw_price = :cursorPrice AND deviceId < :cursorDeviceId))");
             }
         }
     }

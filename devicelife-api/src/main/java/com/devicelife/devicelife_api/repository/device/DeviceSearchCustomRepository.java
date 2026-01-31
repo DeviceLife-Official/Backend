@@ -5,7 +5,9 @@ import com.devicelife.devicelife_api.domain.device.enums.DeviceSortType;
 import com.devicelife.devicelife_api.domain.device.enums.DeviceType;
 import com.devicelife.devicelife_api.service.device.DeviceQueryService.CursorData;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Device 검색을 위한 커스텀 Repository 인터페이스
@@ -17,7 +19,7 @@ public interface DeviceSearchCustomRepository {
      * 기기 검색 (커서 기반 페이지네이션)
      *
      * @param keyword     검색 키워드
-     * @param cursorData  페이지네이션 커서 (정렬값 + deviceId), null이면 첫 페이지
+     * @param cursor  페이지네이션 커서 (정렬값 + deviceId), null이면 첫 페이지
      * @param size        페이지 크기 (1~60)
      * @param sortType    정렬 타입
      * @param deviceTypes 검색할 기기 타입들 (null이면 전체)
@@ -26,14 +28,13 @@ public interface DeviceSearchCustomRepository {
      * @param brandIds    검색할 브랜드 ID들 (null이면 전체)
      * @return 기기 목록 (size + 1개까지 조회하여 hasNext 판단용)
      */
-    List<DeviceItemDto> searchDevices(
-            String keyword,
-            CursorData cursorData,
-            int size,
-            DeviceSortType sortType,
-            List<DeviceType> deviceTypes,
-            Integer minPrice,
-            Integer maxPrice,
-            List<Long> brandIds
-    );
+    List<DeviceItemDto> searchDevices(String keyword,
+                                      CursorData cursor,
+                                      int size,
+                                      DeviceSortType sortType,
+                                      List<DeviceType> deviceTypes,
+                                      Integer minPrice,
+                                      Integer maxPrice,
+                                      List<Long> brandIds,
+                                      Map<String, BigDecimal> exchangeRates);
 }

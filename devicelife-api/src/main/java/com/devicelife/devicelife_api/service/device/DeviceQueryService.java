@@ -1,5 +1,6 @@
 package com.devicelife.devicelife_api.service.device;
 
+import com.devicelife.devicelife_api.common.currency.ExchangeRateService;
 import com.devicelife.devicelife_api.common.exception.CustomException;
 import com.devicelife.devicelife_api.common.exception.ErrorCode;
 import com.devicelife.devicelife_api.domain.device.dto.response.DeviceItemDto;
@@ -11,12 +12,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+
 
 import static com.devicelife.devicelife_api.common.constants.KeywordMapping.KOREAN_TO_ENGLISH;
 
@@ -30,6 +33,7 @@ import static com.devicelife.devicelife_api.common.constants.KeywordMapping.KORE
 public class DeviceQueryService {
 
     private final DeviceSearchCustomRepository deviceSearchRepository;
+    private final ExchangeRateService exchangeRateService;
 
     private static final int DEFAULT_SIZE = 24;
     private static final int MIN_SIZE = 1;
@@ -51,7 +55,10 @@ public class DeviceQueryService {
 
         String convertedKeyword = convertKeyword(keyword);
 
-        // 2. Repository를 통해 데이터 조회 (size + 1개 조회)
+        // 2. 환율 정보 가져오기
+        Map<String, BigDecimal> exchangeRates = exchangeRateService.getExchangeRateMap();
+
+        // 3. Repository를 통해 데이터 조회 (size + 1개 조회)
         List<DeviceItemDto> devices = deviceSearchRepository.searchDevices(
                 convertedKeyword,
                 cursorData,
@@ -60,21 +67,22 @@ public class DeviceQueryService {
                 deviceTypes,
                 minPrice,
                 maxPrice,
-                brandIds
+                brandIds,
+                exchangeRates
         );
 
-        // 3. hasNext 판단 및 실제 반환할 데이터 추출
+        // 4. hasNext 판단 및 실제 반환할 데이터 추출
         boolean hasNext = devices.size() > size;
         List<DeviceItemDto> actualDevices = hasNext
                 ? devices.subList(0, size)
                 : devices;
 
-        // 4. nextCursor 생성
+        // 5. nextCursor 생성
         String nextCursor = hasNext
                 ? encodeCursor(actualDevices.get(actualDevices.size() - 1), sort)
                 : null;
 
-        // 5. 응답 DTO 생성
+        // 6. 응답 DTO 생성
         return DeviceSearchResponseDto.of(actualDevices, nextCursor, hasNext);
     }
 
