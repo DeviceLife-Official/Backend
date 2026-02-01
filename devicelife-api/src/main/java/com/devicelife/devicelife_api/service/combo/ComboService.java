@@ -85,18 +85,24 @@ public class ComboService {
         List<ComboDevice> comboDevices = comboDeviceRepository.findAllByComboId(combo.getComboId());
 
         List<ComboDeviceResponseDto> deviceDtos = comboDevices.stream()
-                .map(cd -> ComboDeviceResponseDto.builder()
-                        .deviceId(cd.getDevice().getDeviceId())
-                        .name(cd.getDevice().getName())
-                        .modelCode(cd.getDevice().getModelCode())
-                        .brandName(cd.getDevice().getBrand().getBrandName())
-                        .deviceType(cd.getDevice().getDeviceType() != null 
-                                ? cd.getDevice().getDeviceType().getDisplayName() : null)
-                        .price(cd.getDevice().getPrice())
-                        .priceCurrency(cd.getDevice().getPriceCurrency())
-                        .imageUrl(cd.getDevice().getImageUrl())
-                        .addedAt(cd.getAddedAt())
-                        .build())
+                .map(cd -> {
+                    Device device = cd.getDevice();
+                    Integer priceKrw = currencyConverter.convertToKRW(device.getPrice(), device.getPriceCurrency());
+                    
+                    return ComboDeviceResponseDto.builder()
+                            .deviceId(device.getDeviceId())
+                            .name(device.getName())
+                            .modelCode(device.getModelCode())
+                            .brandName(device.getBrand().getBrandName())
+                            .deviceType(device.getDeviceType() != null 
+                                    ? device.getDeviceType().getDisplayName() : null)
+                            .price(device.getPrice())
+                            .priceCurrency(device.getPriceCurrency())
+                            .priceKrw(priceKrw)
+                            .imageUrl(device.getImageUrl())
+                            .addedAt(cd.getAddedAt())
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         return ComboDetailResponseDto.builder()
@@ -142,18 +148,24 @@ public class ComboService {
                     List<ComboDevice> comboDevices = comboDeviceRepository.findAllByComboId(combo.getComboId());
                     
                     List<ComboDeviceResponseDto> deviceDtos = comboDevices.stream()
-                            .map(cd -> ComboDeviceResponseDto.builder()
-                                    .deviceId(cd.getDevice().getDeviceId())
-                                    .name(cd.getDevice().getName())
-                                    .modelCode(cd.getDevice().getModelCode())
-                                    .brandName(cd.getDevice().getBrand().getBrandName())
-                                    .deviceType(cd.getDevice().getDeviceType() != null 
-                                            ? cd.getDevice().getDeviceType().getDisplayName() : null)
-                                    .price(cd.getDevice().getPrice())
-                                    .priceCurrency(cd.getDevice().getPriceCurrency())
-                                    .imageUrl(cd.getDevice().getImageUrl())
-                                    .addedAt(cd.getAddedAt())
-                                    .build())
+                            .map(cd -> {
+                                Device device = cd.getDevice();
+                                Integer priceKrw = currencyConverter.convertToKRW(device.getPrice(), device.getPriceCurrency());
+                                
+                                return ComboDeviceResponseDto.builder()
+                                        .deviceId(device.getDeviceId())
+                                        .name(device.getName())
+                                        .modelCode(device.getModelCode())
+                                        .brandName(device.getBrand().getBrandName())
+                                        .deviceType(device.getDeviceType() != null 
+                                                ? device.getDeviceType().getDisplayName() : null)
+                                        .price(device.getPrice())
+                                        .priceCurrency(device.getPriceCurrency())
+                                        .priceKrw(priceKrw)
+                                        .imageUrl(device.getImageUrl())
+                                        .addedAt(cd.getAddedAt())
+                                        .build();
+                            })
                             .collect(Collectors.toList());
                     
                     return ComboListResponseDto.builder()
