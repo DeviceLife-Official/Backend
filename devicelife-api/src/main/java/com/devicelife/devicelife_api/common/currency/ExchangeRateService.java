@@ -167,4 +167,14 @@ public class ExchangeRateService {
     public String[] getSupportedCurrencies() {
         return reverseExchangeRateCache.keySet().toArray(new String[0]);
     }
+
+    /**
+     * 캐시된 역환율 맵(통화 -> KRW)의 복사본을 반환합니다.
+     * 외부에서 캐시를 수정하는 것을 방지하기 위함입니다.
+     *
+     * @return 환율 정보 맵
+     */
+    public Map<String, BigDecimal> getExchangeRateMap() {
+        return new HashMap<>(reverseExchangeRateCache);
+    }
 }
