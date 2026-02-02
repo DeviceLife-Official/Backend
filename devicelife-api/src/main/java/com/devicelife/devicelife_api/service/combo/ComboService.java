@@ -12,9 +12,11 @@ import com.devicelife.devicelife_api.domain.combo.dto.request.ComboDeviceAddRequ
 import com.devicelife.devicelife_api.domain.combo.dto.request.ComboUpdateRequestDto;
 import com.devicelife.devicelife_api.domain.combo.dto.response.*;
 import com.devicelife.devicelife_api.domain.device.Device;
+import com.devicelife.devicelife_api.domain.evaluation.Evaluation;
 import com.devicelife.devicelife_api.domain.user.User;
 import com.devicelife.devicelife_api.repository.combo.ComboDeviceRepository;
 import com.devicelife.devicelife_api.repository.combo.ComboRepository;
+import com.devicelife.devicelife_api.repository.evaluation.EvaluationRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,7 @@ public class ComboService {
 
     private final ComboRepository comboRepository;
     private final ComboDeviceRepository comboDeviceRepository;
+    private final EvaluationRepository evaluationRepository;
     private final EntityManager em;
     private final CurrencyConverter currencyConverter;
 
@@ -411,4 +414,47 @@ public class ComboService {
         LocalDateTime permanentDeleteDate = deletedAt.plusDays(30);
         return ChronoUnit.DAYS.between(LocalDateTime.now(), permanentDeleteDate);
     }
+
+    /**
+     * [신규] 조합 평가 점수 조회 (Polling용)
+     */
+    @Transactional(readOnly = true)
+    public ComboEvaluationResponseDto getComboEvaluation(Long comboId, CustomUserDetails cud) {
+        // 1. 조합 존재 확인
+        Combo combo = comboRepository.findById(comboId)
+                .orElseThrow(() -> new CustomException(ErrorCode.COMBO_4041));
+
+        // 2. 권한 검사
+        validateComboOwnership(combo, cud.getId());
+
+        // 3. 평가 데이터 조회
+        // 데이터가 없으면 예외 발생 -> 프론트엔드가 "계산 중" 상태 유지
+        Evaluation evaluation = evaluationRepository.findByComboId(comboId)
+                .orElseThrow(() -> new CustomException(ErrorCode.EVAL_4041));
+
+        // 4. DTO 변환
+        int totalScoreInt = evaluation.getTotalScore().intValue();
+
+        return ComboEvaluationResponseDto.builder()
+                .comboId(evaluation.getComboId())
+                .totalScore(totalScoreInt)
+                .grade(getGrade(totalScoreInt)) // [수정] 보내주신 5단계 로직 적용
+                .connectivity(evaluation.getScoreA() != null ? evaluation.getScoreA().intValue() : 0) // 연동성
+                .convenience(evaluation.getScoreB() != null ? evaluation.getScoreB().intValue() : 0)  // 편의성
+                .lifestyle(evaluation.getScoreC() != null ? evaluation.getScoreC().intValue() : 0)    // 라이프스타일
+                .evaluatedAt(evaluation.getCreatedAt())
+                .build();
+    }
+
+    /**
+     * [신규] 점수 등급 계산 (5단계)
+     */
+    private String getGrade(int score) {
+        if (score >= 90) return "최상";
+        if (score >= 80) return "상";
+        if (score >= 60) return "중";
+        if (score >= 40) return "하";
+        return "최하";
+    }
+
 }
