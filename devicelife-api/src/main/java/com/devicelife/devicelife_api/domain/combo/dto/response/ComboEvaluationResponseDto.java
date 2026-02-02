@@ -14,9 +14,15 @@ import java.time.LocalDateTime;
 public class ComboEvaluationResponseDto {
     private Long comboId;
     private int totalScore;
-    private String grade;       // HIGH, MID, LOW
-    private int connectivity;   // scoreA (연동성)
-    private int convenience;    // scoreB (편의성/품질)
-    private int lifestyle;      // scoreC (라이프스타일)
+    // --- 항목별 점수 및 등급 ---
+    private int connectivity;          // 연동성 점수
+    private String connectivityGrade;  // [New] 연동성 등급
+
+    private int convenience;           // 편의성 점수
+    private String convenienceGrade;   // [New] 편의성 등급
+
+    private int lifestyle;             // 라이프스타일 점수
+    private String lifestyleGrade;     // [New] 라이프스타일 등급
+    // -------------------------
     private LocalDateTime evaluatedAt;
 }

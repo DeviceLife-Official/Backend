@@ -404,15 +404,24 @@ public class ComboService {
                 .orElseThrow(() -> new CustomException(ErrorCode.EVAL_4041));
 
         // 4. DTO 변환
-        int totalScoreInt = evaluation.getTotalScore().intValue();
+        int scoreA = evaluation.getScoreA() != null ? evaluation.getScoreA().intValue() : 0;
+        int scoreB = evaluation.getScoreB() != null ? evaluation.getScoreB().intValue() : 0;
+        int scoreC = evaluation.getScoreC() != null ? evaluation.getScoreC().intValue() : 0;
+        int totalScore = evaluation.getTotalScore().intValue();
 
         return ComboEvaluationResponseDto.builder()
                 .comboId(evaluation.getComboId())
-                .totalScore(totalScoreInt)
-                .grade(getGrade(totalScoreInt)) // [수정] 보내주신 5단계 로직 적용
-                .connectivity(evaluation.getScoreA() != null ? evaluation.getScoreA().intValue() : 0) // 연동성
-                .convenience(evaluation.getScoreB() != null ? evaluation.getScoreB().intValue() : 0)  // 편의성
-                .lifestyle(evaluation.getScoreC() != null ? evaluation.getScoreC().intValue() : 0)    // 라이프스타일
+                .totalScore(totalScore)              // 총점 (예: 207)
+
+                .connectivity(scoreA)
+                .connectivityGrade(getGrade(scoreA)) // 연동성 등급 (예: "중")
+
+                .convenience(scoreB)
+                .convenienceGrade(getGrade(scoreB))  // 편의성 등급 (예: "중")
+
+                .lifestyle(scoreC)
+                .lifestyleGrade(getGrade(scoreC))    // 라이프스타일 등급 (예: "중")
+
                 .evaluatedAt(evaluation.getCreatedAt())
                 .build();
     }
