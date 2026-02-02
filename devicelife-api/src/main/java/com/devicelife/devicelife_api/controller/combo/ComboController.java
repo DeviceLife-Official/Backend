@@ -114,6 +114,8 @@ public class ComboController {
             @PathVariable Long comboId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         ComboDetailResponseDto result = comboService.getComboDetail(comboId, customUserDetails);
+        // 2. [추가] "방금 수정됨! 카운트다운 시작해!"
+        evaluationScheduler.scheduleEvaluation(comboId);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         SuccessCode.COMBO_GET_SUCCESS.getCode(),
