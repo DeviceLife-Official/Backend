@@ -251,6 +251,11 @@ public class ComboService {
             throw new CustomException(ErrorCode.DEVICE_4041);
         }
 
+        // ✅ 카테고리 중복 금지 검사
+        if (comboDeviceRepository.existsByComboAndDevice_DeviceType(combo,device.getDeviceType())) {
+            throw new CustomException(ErrorCode.COMBO_4006);
+        }
+
         ComboDeviceId comboDeviceId = new ComboDeviceId(comboId, request.getDeviceId());
         if (comboDeviceRepository.existsById(comboDeviceId)) {
             throw new CustomException(ErrorCode.COMBO_4003);

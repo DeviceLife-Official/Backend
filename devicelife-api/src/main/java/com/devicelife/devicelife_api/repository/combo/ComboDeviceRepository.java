@@ -1,7 +1,9 @@
 package com.devicelife.devicelife_api.repository.combo;
 
+import com.devicelife.devicelife_api.domain.combo.Combo;
 import com.devicelife.devicelife_api.domain.combo.ComboDevice;
 import com.devicelife.devicelife_api.domain.combo.ComboDeviceId;
+import com.devicelife.devicelife_api.domain.device.enums.DeviceType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -35,4 +37,8 @@ public interface ComboDeviceRepository extends JpaRepository<ComboDevice, ComboD
      * 특정 조합의 모든 기기 삭제
      */
     void deleteAllByIdComboId(Long comboId);
+
+    boolean existsByCombo_ComboIdAndDevice_DeviceType(Long comboComboId, DeviceType deviceDeviceType);
+
+    boolean existsByComboAndDevice_DeviceType(Combo combo, DeviceType deviceDeviceType);
 }
