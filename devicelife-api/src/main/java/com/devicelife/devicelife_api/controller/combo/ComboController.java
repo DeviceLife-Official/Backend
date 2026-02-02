@@ -497,4 +497,42 @@ public class ComboController {
                 )
         );
     }
+
+    // ========== 평가 점수 조회 (Polling 용) ==========
+
+    @Operation(
+            summary = "조합 평가 점수 조회",
+            description = """
+            특정 조합의 최신 평가 점수를 조회한다.
+            워커가 계산을 마친 후 DB에 저장된 값을 가져온다.
+            프론트엔드에서는 1초 간격으로 폴링(Polling)하여 결과를 확인해야 한다.
+            """
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "성공",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "평가 데이터가 없음 (아직 계산 중이거나 조합이 없음)",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            )
+    })
+    @GetMapping("/{comboId}/evaluation")
+    public ResponseEntity<ApiResponse<ComboEvaluationResponseDto>> getComboEvaluation(
+            @PathVariable Long comboId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        ComboEvaluationResponseDto result = comboService.getComboEvaluation(comboId, customUserDetails);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        SuccessCode.COMBO_GET_SUCCESS.getCode(),
+                        "평가 점수 조회 성공",
+                        result
+                )
+        );
+    }
 }

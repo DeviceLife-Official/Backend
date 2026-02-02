@@ -31,6 +31,9 @@ public enum ErrorCode {
     COMBO_4004("COMBO_4004", 400, "조합에 해당 기기가 없습니다."),
     COMBO_4005("COMBO_4005", 400, "이미 동일한 이름의 조합이 존재합니다."),
 
+    // Evaluation 관련 오류 (EVAL_XXXX)
+    EVAL_4041("EVAL_4041", 404, "평가 데이터를 찾을 수 없습니다."),
+
     // Tag 관련 오류 (TAG_XXXX)
     TAG_4001("TAG_4001",400,"존재하지 않는 태그가 포함되어있습니다."),
 

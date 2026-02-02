@@ -17,4 +17,7 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
     @Query("delete from Evaluation e where e.comboId = :comboId")
     int deleteAllByComboId(@Param("comboId") Long comboId);
 
+    // 콤보 ID로 최신 평가 내역 조회
+    Optional<Evaluation> findByComboId(Long comboId);
+
 }
