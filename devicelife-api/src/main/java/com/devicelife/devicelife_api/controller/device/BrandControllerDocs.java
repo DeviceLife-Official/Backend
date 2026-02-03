@@ -19,11 +19,11 @@ public interface BrandControllerDocs {
             브랜드 목록을 조회합니다.
 
             **사용 방법:**
-            - deviceType 미지정: 전체 브랜드 목록 반환
+            - deviceType 미지정: 필터된 기기 개수 기준 상위 8개 브랜드 반환
             - deviceType 지정: 해당 기기 타입에 등록된 브랜드만 반환
 
             **예시:**
-            - GET /api/brands → 전체 브랜드
+            - GET /api/brands → 기기 개수 순 상위 8개 브랜드 (Apple, Samsung, LG 등)
             - GET /api/brands?deviceType=SMARTPHONE → 스마트폰 브랜드만 (Apple, Samsung 등)
             - GET /api/brands?deviceType=LAPTOP → 노트북 브랜드만
             """)
