@@ -22,7 +22,7 @@ public class BrandQueryService {
     public List<BrandResponseDto> getAllBrands(DeviceType deviceType) {
 
         if (deviceType == null) {
-            return brandRepository.findAll().stream()
+            return brandRepository.findTopBrandsByFilteredDeviceCount().stream()
                     .map(BrandResponseDto::from)
                     .toList();
         } else {
