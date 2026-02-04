@@ -459,11 +459,10 @@ public class ComboService {
      * [신규] 점수 등급 계산 (5단계)
      */
     private String getGrade(int score) {
-        if (score >= 90) return "최상";
-        if (score >= 80) return "상";
-        if (score >= 60) return "중";
-        if (score >= 40) return "하";
-        return "최하";
+        if (score >= 90) return "최적";
+        if (score >= 80) return "양호";
+        if (score >= 60) return "보통";
+        return "미흡";
     }
 
 }
