@@ -77,8 +77,8 @@
 * 작업 시작 전, 항상 최신 main 내용 받아오기 (git pull origin main)
 * 작업 완료 후, main으로 Pull Request(PR) 생성
 * PR에 Reviewer(멘션) 지정 이후 머지
-* 브랜치 이름 형식: feat/이슈번호-기능명
-* 예시: feat/2-combination-api
+* 브랜치 이름 형식: feat/기능명
+* 예시: feat/combination-api
 
 ---
 
