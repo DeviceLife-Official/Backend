@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Tag(
         name = "Policy",
         description = """
-        약관 API.
+        약관 API. by 채정원
         """
 )
 public interface PolicyControllerDocs {

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Tag(
         name = "Notice",
         description = """
-        공지사항 API
+        공지사항 API by 채정원
         """
 )
 public interface NoticeControllerDocs {

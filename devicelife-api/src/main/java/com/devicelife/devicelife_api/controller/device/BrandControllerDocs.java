@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@Tag(name = "Brand", description = "브랜드 조회 API")
+@Tag(name = "Brand", description = "브랜드 조회 API by 채정원")
 public interface BrandControllerDocs {
 
     @Operation(summary = "브랜드 목록 조회", description = """

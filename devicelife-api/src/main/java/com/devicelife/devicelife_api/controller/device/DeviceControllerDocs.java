@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@Tag(name = "Device", description = "기기 검색 및 조회 API")
+@Tag(name = "Device", description = "기기 검색 및 조회 API by 채정원")
 public interface DeviceControllerDocs {
 
     @Operation(summary = "기기 검색 (무한 스크롤)", description = """

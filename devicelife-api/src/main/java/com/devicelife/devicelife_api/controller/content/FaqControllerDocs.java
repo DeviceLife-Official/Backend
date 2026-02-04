@@ -20,7 +20,7 @@ import java.util.List;
 @Tag(
         name = "FAQ",
         description = """
-        자주 묻는 질문(FAQ) API.
+        자주 묻는 질문(FAQ) API. by 채정원
         """
 )
 public interface FaqControllerDocs {

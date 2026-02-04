@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(
         name = "Onboarding",
         description = """
-        온보딩 완료 처리 API.
+        온보딩 완료 처리 API. by 박은서
         """
 )
 @RestController

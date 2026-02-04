@@ -27,7 +27,7 @@ import java.util.List;
 @Tag(
         name = "Combo",
         description = """
-        기기 조합 관리 API - 인증 필요 (JWT Token)
+        기기 조합 관리 API - 인증 필요 (JWT Token) - by 이태훈, 박은서
         - 조합 생성/수정/조회/삭제
         - 조합에 기기 추가/삭제
         - 즐겨찾기(핀) 관리
@@ -46,7 +46,7 @@ public class ComboController {
     // ========== 조합 기본 CRUD ==========
 
     @Operation(
-            summary = "조합 생성",
+            summary = "조합 생성 by 박은서",
             description = """
             comboName을 받아 combos 테이블에 조합을 생성한다.
             """
@@ -85,7 +85,7 @@ public class ComboController {
     }
 
     @Operation(
-            summary = "조합 상세 조회",
+            summary = "조합 상세 조회 - 이태훈",
             description = """
             특정 조합의 상세 정보를 조회한다.
             포함된 기기 목록도 함께 반환한다.
@@ -126,7 +126,7 @@ public class ComboController {
     }
 
     @Operation(
-            summary = "조합 목록 조회",
+            summary = "조합 목록 조회 - 이태훈",
             description = """
             특정 사용자의 활성 조합 목록을 조회한다. (삭제되지 않은 조합만)
             즐겨찾기가 있으면 상단에 표시된다.
@@ -159,7 +159,7 @@ public class ComboController {
     }
 
     @Operation(
-            summary = "조합 수정",
+            summary = "조합 수정 - 이태훈",
             description = """
             조합명(comboName)을 수정한다.
             본인의 조합만 수정할 수 있다.
@@ -198,7 +198,7 @@ public class ComboController {
     }
 
     @Operation(
-            summary = "조합 삭제 (소프트 삭제)",
+            summary = "조합 삭제 (소프트 삭제) - 이태훈",
             description = """
             조합을 휴지통으로 이동한다. (소프트 삭제)
             30일 후 자동으로 영구 삭제된다.
@@ -239,7 +239,7 @@ public class ComboController {
     // ========== 즐겨찾기 (핀) ==========
 
     @Operation(
-            summary = "조합 즐겨찾기 토글",
+            summary = "조합 즐겨찾기 토글 - 이태훈",
             description = """
             조합의 즐겨찾기 상태를 토글한다.
             - 즐겨찾기가 없으면 설정
@@ -284,7 +284,7 @@ public class ComboController {
     // ========== 기기 추가/삭제 ==========
 
     @Operation(
-            summary = "조합에 기기 추가",
+            summary = "조합에 기기 추가 - 이태훈, 박은서",
             description = """
             조합에 기기를 추가한다.
             이미 추가된 기기는 중복 추가할 수 없다.
@@ -335,7 +335,7 @@ public class ComboController {
     }
 
     @Operation(
-            summary = "조합에서 기기 삭제",
+            summary = "조합에서 기기 삭제 - 이태훈, 박은서",
             description = """
             조합에서 기기를 삭제한다.
             총 가격이 자동으로 업데이트된다.
@@ -388,7 +388,7 @@ public class ComboController {
     // ========== 휴지통 ==========
 
     @Operation(
-            summary = "휴지통 목록 조회",
+            summary = "휴지통 목록 조회 - 이태훈",
             description = """
             사용자의 휴지통에 있는 조합 목록을 조회한다.
             각 조합의 영구 삭제까지 남은 일수를 함께 반환한다.
@@ -420,7 +420,7 @@ public class ComboController {
     }
 
     @Operation(
-            summary = "휴지통에서 복구",
+            summary = "휴지통에서 복구 - 이태훈",
             description = """
             휴지통에 있는 조합을 복구한다.
             본인의 조합만 복구할 수 있다.
@@ -458,7 +458,7 @@ public class ComboController {
     }
 
     @Operation(
-            summary = "휴지통에서 영구 삭제",
+            summary = "휴지통에서 영구 삭제 - 이태훈",
             description = """
             휴지통에 있는 조합을 영구 삭제한다.
             여러 조합을 한 번에 삭제할 수 있다.
@@ -504,7 +504,7 @@ public class ComboController {
     // ========== 평가 점수 조회 (Polling 용) ==========
 
     @Operation(
-            summary = "조합 평가 점수 조회",
+            summary = "조합 평가 점수 조회 - 박은서",
             description = """
             특정 조합의 최신 평가 점수를 조회한다.
             워커가 계산을 마친 후 DB에 저장된 값을 가져온다.

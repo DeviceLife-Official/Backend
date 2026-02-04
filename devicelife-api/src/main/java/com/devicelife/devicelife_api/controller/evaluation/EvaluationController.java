@@ -21,7 +21,7 @@ import static com.devicelife.devicelife_api.common.response.SuccessCode.COMMON_2
 @Tag(
         name = "Evaluation",
         description = """
-        기기 조합 관리 API
+        기기 조합 관리 API by 남성현, 박은서
         - 워커에 평가용 데이터 전달
         - 워커가 계산한 평가점수 갱신
         """

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Tag(
         name = "Inquiry",
         description = """
-        문의 API.
+        문의 API. by 채정원
         """
 )
 public interface InquiryControllerDocs {
