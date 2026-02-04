@@ -45,6 +45,7 @@ public class MypageProfileService {
                 .createdAt(user.getCreatedAt())
                 .lifestyleList(lifestyleList)
                 .authProvider(user.getProvider())
+                .isOnboardingCompleted(user.isOnboardingCompleted())
                 .build();
     }
 

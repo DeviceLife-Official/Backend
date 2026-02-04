@@ -22,6 +22,7 @@ public class MyPageProfileDto {
         String email;
         List<String> lifestyleList;
         AuthProvider authProvider;
+        Boolean isOnboardingCompleted;
     }
 
     @Getter
