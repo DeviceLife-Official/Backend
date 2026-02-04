@@ -84,27 +84,19 @@
 
 ## 🎯 커밋 컨벤션 (Commit Convention)
 
-### 주의 사항
-* type은 소문자만 사용 (feat, fix, refactor, docs, style, test, chore)
-* subject는 모두 현재형 동사
-
 ### 📋 타입 목록
 
 | type | 설명 |
 | :--- | :--- |
-| start | 새로운 프로젝트를 시작할 때 |
+| chore | 기능 추가 이외의 코드 세팅 작업을 했을 때 |
 | feat | 새로운 기능을 추가할 때 |
 | fix | 버그를 수정할 때 |
 | design | CSS 등 사용자 UI 디자인을 변경할 때 |
 | refactor | 기능 변경 없이 코드를 리팩토링할 때 |
 | settings | 설정 파일을 변경할 때 |
 | comment | 필요한 주석을 추가하거나 변경할 때 |
-| dependency/Plugin | 의존성/플러그인을 추가할 때 |
 | docs | README.md 등 문서를 수정할 때 |
 | merge | 브랜치를 병합할 때 |
-| deploy | 빌드 및 배포 관련 작업을 할 때 |
-| rename | 파일 혹은 폴더명을 수정하거나 옮길 때 |
-| remove | 파일을 삭제하는 작업만 수행했을 때 |
 | revert | 이전 버전으로 롤백할 때 |
 
 ### ✨ 예시
