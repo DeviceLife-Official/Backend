@@ -60,7 +60,8 @@ public class SecurityConfig {
                                 "/api/auth/refresh",
                                 "/api/tags/logout",
                                 "/api/onboarding/**",
-                                "/api/mypage/**"
+                                "/api/mypage/**",
+                                "/api/recently-viewed/**"
                                 ).authenticated()
                         .requestMatchers("/internal/**").hasRole("INTERNAL")
                         //.requestMatchers("/internal/**").permitAll()

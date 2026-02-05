@@ -71,6 +71,10 @@ public enum SuccessCode {
     MAIL_SEND_SUCCESS("MAIL_2000", "메일 전송에 성공했습니다."),
 
     VERIFY_SUCCESS("MAIL_2001", "인증에 성공했습니다."),
+
+    // Recently Viewed Device
+    RECENTLY_VIEWED_GET_SUCCESS("RECENTLY_VIEWED_2001", "최근 본 기기 조회에 성공했습니다."),
+    RECENTLY_VIEWED_RECORD_SUCCESS("RECENTLY_VIEWED_2002", "기기 조회 기록 저장에 성공했습니다."),
     ;
 
     private final String code;
