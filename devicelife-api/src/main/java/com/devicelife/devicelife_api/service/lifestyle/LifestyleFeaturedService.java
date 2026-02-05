@@ -2,6 +2,8 @@ package com.devicelife.devicelife_api.service.lifestyle;
 
 import com.devicelife.devicelife_api.common.exception.CustomException;
 import com.devicelife.devicelife_api.common.exception.ErrorCode;
+import com.devicelife.devicelife_api.common.util.CurrencyConverter;
+import com.devicelife.devicelife_api.domain.lifestyle.request.LifestyleFeaturedDeviceDto;
 import com.devicelife.devicelife_api.domain.lifestyle.response.LifestyleFeaturedResponse;
 import com.devicelife.devicelife_api.repository.lifestyle.LifestyleFeaturedRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,19 +11,35 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class LifestyleFeaturedService {
 
     private final LifestyleFeaturedRepository repo;
+    private final CurrencyConverter currencyConverter;
 
     public LifestyleFeaturedResponse getFeaturedByTagKey(String tagKey) {
         var tag = repo.findTagByKey(tagKey);
         if (tag == null) throw new CustomException(ErrorCode.REQ_4002, "존재하지 않는 tagKey");
 
         var devices = repo.findFeaturedDevicesByTagKey(tagKey);
-        return new LifestyleFeaturedResponse(tag.tagKey(), tag.tagLabel(), tag.tagType(), devices);
+        
+        // 가격을 한화(KRW)로 환전
+        var devicesWithKrwPrice = devices.stream()
+                .map(device -> new LifestyleFeaturedDeviceDto(
+                        device.getSlot(),
+                        device.getDeviceId(),
+                        device.getImageUrl(),
+                        device.getDisplayName(),
+                        device.getReleaseDate(),
+                        currencyConverter.convertToKRW(device.getPrice(), device.getCurrency()),
+                        "KRW"
+                ))
+                .collect(Collectors.toList());
+        
+        return new LifestyleFeaturedResponse(tag.tagKey(), tag.tagLabel(), tag.tagType(), devicesWithKrwPrice);
     }
 
     @Transactional
