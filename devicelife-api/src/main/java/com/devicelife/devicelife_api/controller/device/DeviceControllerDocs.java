@@ -1,6 +1,8 @@
 package com.devicelife.devicelife_api.controller.device;
 
 import com.devicelife.devicelife_api.common.response.ApiResponse;
+import com.devicelife.devicelife_api.common.security.CustomUserDetails;
+import com.devicelife.devicelife_api.domain.device.dto.response.DeviceDetailResponseDto;
 import com.devicelife.devicelife_api.domain.device.dto.response.DeviceSearchResponseDto;
 import com.devicelife.devicelife_api.domain.device.enums.DeviceSortType;
 import com.devicelife.devicelife_api.domain.device.enums.DeviceType;
@@ -8,7 +10,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -50,4 +55,31 @@ public interface DeviceControllerDocs {
             @Parameter(description = "최대 가격") @RequestParam(required = false) Integer maxPrice,
 
             @Parameter(description = "브랜드 ID 목록") @RequestParam(required = false) List<Long> brandIds);
+
+    @Operation(summary = "기기 세부 정보 조회", description = """
+            기기의 상세 정보를 조회합니다.
+            모달이 열릴 때 이 API를 호출하여 기기 정보를 표시합니다.
+            
+            **로그인한 유저의 경우**, 이 API를 호출하면 자동으로 최근 본 기기 테이블에 저장됩니다.
+            비로그인 상태에서도 기기 정보 조회는 가능하지만, 최근 본 기기에는 저장되지 않습니다.
+            
+            **반환 정보:**
+            - 모델명
+            - 가격
+            - 카테고리
+            - 브랜드
+            - 색상
+            - 연결 단자 (기기 타입별로 다름)
+            - 출시일
+            - 태그 (현재는 빈 배열)
+            
+            **빈 값 처리:** 값이 없는 필드는 빈 문자열("")로 반환됩니다.
+            """)
+    @SecurityRequirement(name = "JWT TOKEN")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = DeviceDetailResponseDto.class)))
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "기기를 찾을 수 없음")
+    ApiResponse<DeviceDetailResponseDto> getDeviceDetail(
+            @Parameter(description = "기기 ID") @PathVariable Long deviceId,
+            @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails customUserDetails
+    );
 }

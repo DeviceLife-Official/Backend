@@ -19,11 +19,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Tag(
-        name = "Recently Viewed Device - by 이태훈",
+        name = "Recently Viewed Device",
         description = """
+        by 이태훈
         최근 본 기기 API - 인증 필요 (JWT Token)
         - 최근 본 기기 목록 조회 (최신순, 상위 2개)
-        - 기기 조회 기록 저장
+        
+        ※ 기기 조회 시 자동 저장됩니다. (GET /api/devices/{deviceId} 호출 시)
         """
 )
 @RestController
@@ -68,44 +70,6 @@ public class RecentlyViewedDeviceController {
                         SuccessCode.RECENTLY_VIEWED_GET_SUCCESS.getCode(),
                         SuccessCode.RECENTLY_VIEWED_GET_SUCCESS.getMessage(),
                         result
-                )
-        );
-    }
-
-    @Operation(
-            summary = "기기 조회 기록 저장",
-            description = """
-            사용자가 기기를 조회했을 때 기록을 저장한다.
-            이미 조회한 기기인 경우 조회 시간만 업데이트한다.
-            """
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "200",
-                    description = "성공",
-                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "401",
-                    description = "인증 정보가 누락되었거나 유효하지 않음",
-                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "404",
-                    description = "사용자 또는 기기를 찾을 수 없음",
-                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
-            )
-    })
-    @PostMapping("/{deviceId}")
-    public ResponseEntity<ApiResponse<Void>> recordDeviceView(
-            @PathVariable Long deviceId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        recentlyViewedDeviceService.recordDeviceView(customUserDetails.getId(), deviceId);
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        SuccessCode.RECENTLY_VIEWED_RECORD_SUCCESS.getCode(),
-                        SuccessCode.RECENTLY_VIEWED_RECORD_SUCCESS.getMessage(),
-                        null
                 )
         );
     }

@@ -39,7 +39,7 @@ public class RecentlyViewedDeviceService {
         }
 
         List<RecentlyViewedDevice> recentlyViewedDevices = 
-                recentlyViewedDeviceRepository.findTopNByUserIdOrderByViewedAtDesc(userId, 2);
+                recentlyViewedDeviceRepository.findTop2ByUserIdOrderByViewedAtDesc(userId);
 
         return recentlyViewedDevices.stream()
                 .map(rv -> {

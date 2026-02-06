@@ -3,11 +3,15 @@ package com.devicelife.devicelife_api.service.device;
 import com.devicelife.devicelife_api.common.currency.ExchangeRateService;
 import com.devicelife.devicelife_api.common.exception.CustomException;
 import com.devicelife.devicelife_api.common.exception.ErrorCode;
+import com.devicelife.devicelife_api.common.util.CurrencyConverter;
+import com.devicelife.devicelife_api.domain.device.*;
+import com.devicelife.devicelife_api.domain.device.dto.response.DeviceDetailResponseDto;
 import com.devicelife.devicelife_api.domain.device.dto.response.DeviceItemDto;
 import com.devicelife.devicelife_api.domain.device.dto.response.DeviceSearchResponseDto;
 import com.devicelife.devicelife_api.domain.device.enums.DeviceSortType;
 import com.devicelife.devicelife_api.domain.device.enums.DeviceType;
 import com.devicelife.devicelife_api.repository.device.DeviceSearchCustomRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 import static com.devicelife.devicelife_api.common.constants.KeywordMapping.KOREAN_TO_ENGLISH;
@@ -34,6 +36,8 @@ public class DeviceQueryService {
 
     private final DeviceSearchCustomRepository deviceSearchRepository;
     private final ExchangeRateService exchangeRateService;
+    private final EntityManager em;
+    private final CurrencyConverter currencyConverter;
 
     private static final int DEFAULT_SIZE = 24;
     private static final int MIN_SIZE = 1;
@@ -154,5 +158,97 @@ public class DeviceQueryService {
 
         // 공백 제거 (DB에서도 공백 제거 후 비교하므로)
         return result.replaceAll("\\s+", "");
+    }
+
+    /**
+     * 기기 세부 정보 조회
+     * PM 요구사항: 모델명, 가격, 카테고리, 브랜드, 색상, 연결 단자, 출시일, 태그
+     */
+    public DeviceDetailResponseDto getDeviceDetail(Long deviceId) {
+        Device device = em.find(Device.class, deviceId);
+        if (device == null) {
+            throw new CustomException(ErrorCode.DEVICE_4041);
+        }
+
+        // 가격 KRW 변환
+        Integer priceKrw = currencyConverter.convertToKRW(device.getPrice(), device.getPriceCurrency());
+
+        // 포트 정보 추출 (기기 타입별로 다름)
+        DeviceDetailResponseDto.PortInfo portInfo = extractPortInfo(device);
+
+        // 브랜드명 안전하게 추출
+        String brandName = "";
+        if (device.getBrand() != null && device.getBrand().getBrandName() != null) {
+            brandName = device.getBrand().getBrandName();
+        }
+
+        // 카테고리 안전하게 추출
+        String category = "";
+        if (device.getDeviceType() != null && device.getDeviceType().getDisplayName() != null) {
+            category = device.getDeviceType().getDisplayName();
+        }
+
+        return DeviceDetailResponseDto.builder()
+                .deviceId(device.getDeviceId())
+                .name(device.getName() != null && !device.getName().isEmpty() ? device.getName() : "")
+                .modelCode(device.getModelCode() != null && !device.getModelCode().isEmpty() ? device.getModelCode() : "")
+                .brandName(brandName)
+                .category(category)
+                .price(device.getPrice())
+                .priceCurrency(device.getPriceCurrency() != null && !device.getPriceCurrency().isEmpty() ? device.getPriceCurrency() : "")
+                .priceKrw(priceKrw)
+                .colorHex(device.getColorHex() != null && !device.getColorHex().isEmpty() ? device.getColorHex() : "")
+                .releaseDate(device.getReleaseDate())
+                .imageUrl(device.getImageUrl() != null && !device.getImageUrl().isEmpty() ? device.getImageUrl() : "")
+                .portInfo(portInfo)
+                .tags(Collections.emptyList()) // 태그는 빈 배열로 반환 (PM 요청)
+                .build();
+    }
+
+    /**
+     * 기기 타입별 포트 정보 추출
+     */
+    private DeviceDetailResponseDto.PortInfo extractPortInfo(Device device) {
+        DeviceDetailResponseDto.PortInfo.PortInfoBuilder builder = DeviceDetailResponseDto.PortInfo.builder();
+
+        if (device instanceof Smartphone smartphone) {
+            builder.chargingPort(smartphone.getChargingPort() != null 
+                    ? smartphone.getChargingPort().name() : "");
+        } else if (device instanceof Laptop laptop) {
+            builder.chargingMethod(laptop.getChargingMethod() != null 
+                    ? laptop.getChargingMethod().name() : "");
+            builder.hasHdmi(laptop.getHasHdmi());
+            builder.hasThunderbolt(laptop.getHasThunderbolt());
+            builder.hasUsbA(laptop.getHasUsbA());
+            builder.usbCPortCount(laptop.getUsbCPortCount());
+        } else if (device instanceof Tablet tablet) {
+            builder.chargingPort(tablet.getChargingPort() != null 
+                    ? tablet.getChargingPort().name() : "");
+        } else if (device instanceof Smartwatch smartwatch) {
+            builder.chargingMethod(smartwatch.getChargingMethod() != null 
+                    ? smartwatch.getChargingMethod().name() : "");
+        } else if (device instanceof Audio audio) {
+            builder.connectionType(audio.getConnectionType() != null 
+                    ? audio.getConnectionType().name() : "");
+            // Audio의 케이스 충전 타입을 chargingPort로 매핑
+            builder.chargingPort(audio.getCaseChargingType() != null 
+                    ? audio.getCaseChargingType().name() : "");
+        } else if (device instanceof Keyboard keyboard) {
+            builder.connectionType(keyboard.getConnectionType() != null 
+                    ? keyboard.getConnectionType().name() : "");
+        } else if (device instanceof Mouse mouse) {
+            builder.connectionType(mouse.getConnectionType() != null 
+                    ? mouse.getConnectionType().name() : "");
+        } else if (device instanceof Charger charger) {
+            // Charger의 포트 정보를 간단히 표현
+            if (charger.getPortConfiguration() != null && !charger.getPortConfiguration().isEmpty()) {
+                builder.outputPortType(String.join(", ", charger.getPortConfiguration()));
+            } else {
+                builder.outputPortType("");
+            }
+            builder.outputPortCount(charger.getTotalPortCount());
+        }
+
+        return builder.build();
     }
 }
