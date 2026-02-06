@@ -22,6 +22,7 @@ public enum SuccessCode {
     DEVICE_2001("DEVICE_2001", "디바이스 목록 조회에 성공했습니다."),
     DEVICE_2002("DEVICE_2002", "디바이스 상세 조회에 성공했습니다."),
     DEVICE_SEARCH_SUCCESS("DEVICE_2003", "기기 검색에 성공했습니다."),
+    DEVICE_DETAIL_GET_SUCCESS("DEVICE_2004", "기기 세부 정보 조회에 성공했습니다."),
     BRAND_LIST_SUCCESS("BRAND_2001", "브랜드 목록 조회에 성공했습니다."),
 
     // Combo
@@ -71,6 +72,9 @@ public enum SuccessCode {
     MAIL_SEND_SUCCESS("MAIL_2000", "메일 전송에 성공했습니다."),
 
     VERIFY_SUCCESS("MAIL_2001", "인증에 성공했습니다."),
+
+    // Recently Viewed Device
+    RECENTLY_VIEWED_GET_SUCCESS("RECENTLY_VIEWED_2001", "최근 본 기기 조회에 성공했습니다."),
     ;
 
     private final String code;
