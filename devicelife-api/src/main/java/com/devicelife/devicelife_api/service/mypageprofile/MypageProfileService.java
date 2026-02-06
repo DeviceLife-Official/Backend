@@ -75,6 +75,10 @@ public class MypageProfileService {
         // 3) 태그 부분 수정: null이면 변경 안 함 / []이면 전체 삭제 / 값 있으면 전체 교체
         if (req.getLifestyleList() != null) {
 
+            if (req.getLifestyleList().size() > 1) {
+                throw new CustomException(TAG_4002);
+            }
+
             // 기존 userTags 전체 삭제
             userTagRepository.deleteAllByUser(user);
 

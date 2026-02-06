@@ -76,6 +76,11 @@ public class MyPageProfileController {
                     responseCode = "USER_4009",
                     description = "이미 사용중인 email",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "TAG_4002",
+                    description = "라이프스타일은 최대 1개만 선택가능",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
             )
     })
     @PatchMapping("/user-profile")
@@ -84,6 +89,7 @@ public class MyPageProfileController {
             - 단, 소셜 유저일경우, 이메일 수정 불가
             (AuthProvider가 GENERAL이면 일반유저, GOOGLE,APPLE이면 소셜유저)
             - 수정하지 않는 값은 null로 입력
+            - 라이프스타일 태그는 2개 이상 삽입 불가
             
             """)
     public ApiResponse<MyPageProfileDto.myProfileModifyResDto> modifyUserProfile(

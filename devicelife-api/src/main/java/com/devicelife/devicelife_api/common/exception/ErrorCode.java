@@ -36,6 +36,7 @@ public enum ErrorCode {
 
     // Tag 관련 오류 (TAG_XXXX)
     TAG_4001("TAG_4001",400,"존재하지 않는 태그가 포함되어있습니다."),
+    TAG_4002("TAG_4002",400,"라이프스타일은 최대 1개만 선택가능합니다."),
 
     // Device 관련 오류 (DEVICE_XXXX)
     DEVICE_4041("DEVICE_4041", 404, "기기를 찾을 수 없습니다."),
