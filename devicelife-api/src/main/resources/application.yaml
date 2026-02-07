@@ -66,7 +66,7 @@ jwt:
   token:
     secretKey: ${JWT_SECRET_KEY}
     expiration:
-      access: 86400000 # 14400000 # PM님의 요청으로 데모데이 전까지만 토큰 기한 24시간으로 설정 (기존 4시간)
+      access: 60000 #864000 # 14400000 # PM님의 요청으로 데모데이 전까지만 토큰 기한 24시간으로 설정 (기존 4시간)
       refresh: 60000 #2592000000 # 30일
 
 server:
