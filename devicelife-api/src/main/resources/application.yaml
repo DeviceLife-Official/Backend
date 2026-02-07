@@ -92,3 +92,7 @@ currency:
     key: ${EXCHANGE_RATE_API_KEY:}
     url: https://v6.exchangerate-api.com/v6
 
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
