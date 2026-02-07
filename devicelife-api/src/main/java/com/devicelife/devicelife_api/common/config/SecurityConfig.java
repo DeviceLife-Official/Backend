@@ -57,8 +57,6 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/combos/**",
                                 "/api/tags/**",
-                                "/api/auth/refresh",
-                                "/api/tags/logout",
                                 "/api/onboarding/**",
                                 "/api/mypage/**",
                                 "/api/recently-viewed/**"
