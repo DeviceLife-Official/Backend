@@ -131,24 +131,6 @@ public class DeviceSearchCustomRepositoryImpl implements DeviceSearchCustomRepos
             params.addValue("maxPrice", maxPrice);
         }
 
-        // 기기 타입별 데이터 필터링
-        sql.append(
-                """
-                          AND (
-                            (deviceType = 'SMARTPHONE' AND releaseDate >= '2021-01-01' AND (
-                                (brandName = 'Samsung' AND (name LIKE '%Galaxy A%' OR name LIKE '%Galaxy S%' OR name LIKE '%Galaxy Z%'))
-                                OR (brandName = 'Apple')
-                            ))
-                            OR (deviceType = 'LAPTOP' AND releaseDate >= '2023-01-01')
-                            OR (deviceType = 'TABLET' AND releaseDate >= '2023-01-01' AND brandName != 'Huawei')
-                            OR (deviceType = 'SMARTWATCH' AND releaseDate >= '2023-01-01' AND brandName IN ('Apple', 'Samsung'))
-                            OR (deviceType = 'AUDIO' AND releaseDate >= '2023-01-01')
-                            OR (deviceType = 'KEYBOARD' AND releaseDate >= '2023-01-01')
-                            OR (deviceType = 'MOUSE' AND releaseDate >= '2023-01-01')
-                            OR (deviceType = 'CHARGER' AND releaseDate >= '2023-01-01')
-                          )
-                        """);
-
         // 동적 정렬 조건 추가 (krw_price 기준)
         sql.append(" ORDER BY ").append(sortType.getOrderByClause().replace("price", "krw_price"));
         sql.append(" LIMIT :limit");
