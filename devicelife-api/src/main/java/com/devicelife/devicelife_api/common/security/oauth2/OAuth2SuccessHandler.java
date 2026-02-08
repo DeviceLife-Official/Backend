@@ -14,15 +14,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 
 import static com.devicelife.devicelife_api.common.response.SuccessCode.*;
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 @RequiredArgsConstructor
 @Component
@@ -54,6 +57,22 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                         .user(user)
                 .build());
 
+        // refreshToken을 HttpOnly 쿠키로 내려주기
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                //.secure(false)
+                //.sameSite("Lax")
+                .path("/")
+                .domain(".devicelife.site")
+                .maxAge(60L * 60 * 24 * 30) // 30일
+                .build();
+        response.addHeader(SET_COOKIE, refreshCookie.toString());
+
+        String redirectUri = request.getParameter("redirect_uri");
+        String target = resolveTarget(redirectUri);
+
         String code;
         String message;
         switch (result) {
@@ -63,12 +82,31 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             default              -> { code = USER_2002.getCode(); message = USER_2002.getMessage(); }
         }
 
+        // 토큰은 절대 URL에 싣지 말고, ok/code 정도만 보내기
+        String location = UriComponentsBuilder.fromUriString(target)
+                .queryParam("code", code)
+                .queryParam("message", message)
+                .build(true)
+                .toUriString();
 
-        response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(
-                ApiResponse.success(code, message,
-                        new AuthDto.loginResDto(user.getUserId(),accessToken,refreshToken))
-        ));
+        response.setStatus(HttpServletResponse.SC_FOUND); // 302
+        response.setHeader("Location", location);
+        // response.sendRedirect(location); 도 가능
+    }
+
+    private String resolveTarget(String redirectUri) {
+        // 안전장치: 허용된 프론트만 리다이렉트 가능하게
+        if (redirectUri == null || redirectUri.isBlank()) {
+            return "https://devicelife.site/auth/callback/google";
+        }
+
+        // 허용 목록
+        if (redirectUri.startsWith("https://devicelife.site")
+                || redirectUri.startsWith("http://localhost:5173")) {
+            return redirectUri;
+        }
+
+        return "https://devicelife.site/auth/callback/google";
     }
 
 }

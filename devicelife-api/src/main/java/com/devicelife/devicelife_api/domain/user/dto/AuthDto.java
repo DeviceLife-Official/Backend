@@ -78,6 +78,7 @@ public class AuthDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    @Setter
     public static class loginResDto {
         Long userId;
         String accessToken;
