@@ -1,5 +1,7 @@
 package com.devicelife.devicelife_api.controller.auth;
 
+import com.devicelife.devicelife_api.common.exception.CustomException;
+import com.devicelife.devicelife_api.common.exception.ErrorCode;
 import com.devicelife.devicelife_api.common.response.ApiResponse;
 import com.devicelife.devicelife_api.domain.user.dto.AuthDto;
 import com.devicelife.devicelife_api.service.auth.AuthService;
@@ -9,12 +11,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.*;
 
 import static com.devicelife.devicelife_api.common.response.SuccessCode.*;
 
+@Slf4j
 @Tag(
         name = "Auth",
         description = """
@@ -90,12 +99,33 @@ public class AuthController {
             )
     })
     @PostMapping("/login")
-    @Operation(summary = "로그인 API", description = "아이디(이메일), 비밀번호 입력")
-    public ApiResponse<AuthDto.loginResDto> login(@RequestBody @Valid AuthDto.loginReqDto dto) {
+    @Operation(summary = "로그인 API", description = "아이디(이메일), 비밀번호 입력, 리프레시토큰은 쿠키 전달 방식으로 수정하였으므로 body에는 null로 설정")
+    public ApiResponse<AuthDto.loginResDto> login(@RequestBody @Valid AuthDto.loginReqDto dto,
+                                                  HttpServletResponse response) {
+
+        AuthDto.loginResDto loginDto = authService.login(dto);
+
+        String refreshToken = loginDto.getRefreshToken();
+
+        ResponseCookie rc = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                //.secure(false)
+                //.sameSite("Lax")
+                .path("/")
+                .maxAge(60 * 60 * 24 * 14)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, rc.toString());
+        response.addHeader("X-Debug-Cookie", "added");
+
+        loginDto.setRefreshToken(null);
+
         return ApiResponse.success(
                 USER_2002.getCode(),
                 USER_2002.getMessage(),
-                authService.login(dto)
+                loginDto
         );
     }
 
@@ -116,14 +146,23 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             )
     })
-    @SecurityRequirement(name = "JWT TOKEN")
     @PostMapping("/refresh")
-    @Operation(summary = "accessToken 재발급 API", description = "리프레시 토큰을 통해 엑세스 토큰 재발급")
-    public ApiResponse<AuthDto.refreshResDto> refresh(@RequestHeader("refreshToken") String refreshToken) {
+    @Operation(summary = "accessToken 재발급 API", description = "리프레시 토큰 쿠키로 엑세스 토큰 재발급")
+    public ApiResponse<AuthDto.refreshResDto> refresh(@CookieValue(name = "refreshToken", required = false) String refreshToken,
+                                                      HttpServletRequest request,
+                                                      HttpServletResponse response) {
+
+        // 쿠키가 없으면 바로 401
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new CustomException(ErrorCode.AUTH_4011);
+        }
+
+        AuthDto.refreshResDto refreshDto = authService.refresh(refreshToken);
+
         return ApiResponse.success(
                 USER_2004.getCode(),
                 USER_2004.getMessage(),
-                authService.refresh(refreshToken));
+                refreshDto);
     }
 
     @ApiResponses({
@@ -133,12 +172,29 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             )
     })
-    @SecurityRequirement(name = "JWT TOKEN")
     @PostMapping("/logout")
     @Operation(summary = "로그아웃 API", description = "로그아웃 API 호출 시 DB 내 리프레시 토큰 정보 삭제")
-    public ApiResponse<Void> logout(@RequestHeader("refreshToken") String refreshToken) {
+    public ApiResponse<Void> logout(@CookieValue(name = "refreshToken", required = false) String refreshToken,
+                                    HttpServletResponse response) {
+
+        // 쿠키가 없으면 바로 401
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new CustomException(ErrorCode.AUTH_4011);
+        }
 
         authService.logout(refreshToken);
+
+        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                //.secure(false)
+                //.sameSite("Lax")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
 
         return ApiResponse.success(
                 COMMON_2001.getCode(),
