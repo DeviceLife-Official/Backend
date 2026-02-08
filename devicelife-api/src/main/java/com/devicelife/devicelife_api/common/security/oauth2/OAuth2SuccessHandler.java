@@ -73,6 +73,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String redirectUri = request.getParameter("redirect_uri");
         String target = resolveTarget(redirectUri);
 
+        /*
         String code;
         String message;
         switch (result) {
@@ -87,11 +88,11 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .queryParam("code", code)
                 .queryParam("message", message)
                 .build(true)
-                .toUriString();
+                .toUriString();*/
 
-        response.setStatus(HttpServletResponse.SC_FOUND); // 302
-        response.setHeader("Location", location);
-        // response.sendRedirect(location); 도 가능
+        //response.setStatus(HttpServletResponse.SC_FOUND); // 302
+        //response.setHeader("Location", location);
+        response.sendRedirect(target);
     }
 
     private String resolveTarget(String redirectUri) {
