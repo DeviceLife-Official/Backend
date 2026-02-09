@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -162,7 +161,7 @@ public class DeviceQueryService {
 
     /**
      * 기기 세부 정보 조회
-     * PM 요구사항: 모델명, 가격, 카테고리, 브랜드, 색상, 연결 단자, 출시일, 태그
+     * PM 요구사항: 모델명, 가격, 카테고리, 브랜드, 연결 단자, 출시일, 태그
      */
     public DeviceDetailResponseDto getDeviceDetail(Long deviceId) {
         Device device = em.find(Device.class, deviceId);
@@ -197,7 +196,6 @@ public class DeviceQueryService {
                 .price(device.getPrice())
                 .priceCurrency(device.getPriceCurrency() != null && !device.getPriceCurrency().isEmpty() ? device.getPriceCurrency() : "")
                 .priceKrw(priceKrw)
-                .colorHex(device.getColorHex() != null && !device.getColorHex().isEmpty() ? device.getColorHex() : "")
                 .releaseDate(device.getReleaseDate())
                 .imageUrl(device.getImageUrl() != null && !device.getImageUrl().isEmpty() ? device.getImageUrl() : "")
                 .portInfo(portInfo)
