@@ -78,13 +78,6 @@ public abstract class Device extends BaseTimeEntity {
     private LocalDate releaseDate;
 
     /**
-     * 대표 색상 코드 (HEX)
-     * e.g., "#1C1C1E"
-     */
-    @Column(name = "colorHex", length = 7)
-    private String colorHex;
-
-    /**
      * 제품 이미지 URL (누끼 처리된 썸네일)
      */
     @Column(name = "imageUrl", length = 500)

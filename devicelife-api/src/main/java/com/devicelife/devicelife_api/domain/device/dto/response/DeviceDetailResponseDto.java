@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * 기기 세부 정보 응답 DTO
- * PM 요구사항: 모델명, 가격, 카테고리, 브랜드, 색상, 연결 단자, 출시일, 태그
+ * PM 요구사항: 모델명, 가격, 카테고리, 브랜드, 연결 단자, 출시일, 태그
  */
 @Getter
 @NoArgsConstructor
@@ -59,11 +59,6 @@ public class DeviceDetailResponseDto {
      * 가격 (KRW 변환)
      */
     private Integer priceKrw;
-
-    /**
-     * 색상 코드 (HEX)
-     */
-    private String colorHex;
 
     /**
      * 출시일
