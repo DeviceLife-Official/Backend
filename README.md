@@ -76,29 +76,32 @@
 
 * 작업 시작 전, 항상 최신 main 내용 받아오기 (git pull origin main)
 * 작업 완료 후, main으로 Pull Request(PR) 생성
-* PR에 Reviewer(멘션) 지정 이후 머지
+* 리뷰 필료한 PR은 Reviewer 설정
 * 브랜치 이름 형식: feat/기능명
 * 예시: feat/combination-api
 
 ---
 
-## 🎯 커밋 컨벤션 (Commit Convention)
+## 🎯 컨벤션 (Convention)
+<aside>
+PR/ISSUE 제목 형식: [Feat] 로그인 api 개발
+</aside>
 
 ### 📋 타입 목록
 
 | type | 설명 |
 | :--- | :--- |
-| chore | 기능 추가 이외의 코드 세팅 작업을 했을 때 |
-| feat | 새로운 기능을 추가할 때 |
-| fix | 버그를 수정할 때 |
-| design | CSS 등 사용자 UI 디자인을 변경할 때 |
-| refactor | 기능 변경 없이 코드를 리팩토링할 때 |
-| settings | 설정 파일을 변경할 때 |
-| comment | 필요한 주석을 추가하거나 변경할 때 |
-| docs | README.md 등 문서를 수정할 때 |
-| merge | 브랜치를 병합할 때 |
-| revert | 이전 버전으로 롤백할 때 |
-
-### ✨ 예시
-* feat: 컴포넌트 추가
-* fix: 가려짐 현상 해결
+| `Feat` | 새로운 기능을 추가할 경우 |
+| `Fix` | 버그를 고친 경우 |
+| `Hotfix` | 급하게 치명적인 버그를 고쳐야하는 경우 |
+| `Style` | 코드 포맷 변경, 세미 콜론 누락, 코드 수정이 없는 경우 |
+| `Refactor` | 프로덕션 코드 리팩토링 |
+| `Comment` | 필요한 주석 추가 및 변경 |
+| `Docs` | 문서를 수정한 경우 |
+| `Test` | 테스트 추가, 테스트 리팩토링(프로덕션 코드 변경 X) |
+| `CI` | CICD 관련 작업 |
+| `Config` | 설정 파일 작성 및 수정 |
+| `Security` | 권한 수정 |
+| `Chore` | 빌드 태스트 업데이트, 패키지 매니저를 설정하는 경우(프로덕션 코드 변경 X) |
+| `Rename` | 파일 혹은 폴더명을 수정하거나 옮기는 작업만인 경우 |
+| `Remove` | 파일을 삭제하는 작업만 수행한 경우 |
