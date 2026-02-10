@@ -16,6 +16,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.URI;
 
 import static com.devicelife.devicelife_api.common.response.SuccessCode.*;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
@@ -36,6 +39,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final RefreshTokenRepository refreshTokenRepository;
     private final SHA256 sha256;
 
+    private final AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository;
+
     @Override
     @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -43,10 +48,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication)
             throws IOException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-
-        String resultStr = (String) userDetails.getAttributes().get("oauth_result");
-        OAuthResult result = (resultStr == null) ? OAuthResult.EXISTING_SOCIAL : OAuthResult.valueOf(resultStr);
-
 
         User user = userDetails.getUser();
         String accessToken = jwtUtil.createAccessToken(userDetails);
@@ -57,48 +58,71 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                         .user(user)
                 .build());
 
-        String redirectUri = request.getParameter("redirect_uri");
+        OAuth2AuthorizationRequest authRequest =
+                authorizationRequestRepository.removeAuthorizationRequest(request, response);
+
+        String redirectUri = null;
+        if (authRequest != null && authRequest.getAdditionalParameters() != null) {
+            Object v = authRequest.getAdditionalParameters().get("redirect_uri");
+            redirectUri = (v == null) ? null : String.valueOf(v);
+        }
         String target = resolveTarget(redirectUri);
 
-        // 로컬 여부 판단(redirect_uri 기준)
-        boolean isLocal = target.startsWith("http://localhost:5173");
+        boolean isLocal = isLocalTarget(target);
 
-        ResponseCookie refreshCookie;
+        ResponseCookie refreshCookie = buildRefreshCookie(refreshToken, isLocal);
+
+        response.addHeader(SET_COOKIE, refreshCookie.toString());
+        response.sendRedirect(target);
+    }
+
+    private boolean isLocalTarget(String target) {
+        try {
+            URI uri = URI.create(target);
+            String host = uri.getHost();
+            int port = uri.getPort();
+
+            // localhost:5173 / 127.0.0.1:5173 둘 다 허용
+            boolean isLocalHost = "localhost".equalsIgnoreCase(host) || "127.0.0.1".equals(host);
+            return isLocalHost && port == 5173;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private ResponseCookie buildRefreshCookie(String refreshToken, boolean isLocal) {
         if (isLocal) {
-            // 로컬(http) 개발용: SameSite=Lax + Secure=false + Domain 미설정
-            refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+            // 로컬(http) 개발용
+            return ResponseCookie.from("refreshToken", refreshToken)
                     .httpOnly(true)
                     .secure(false)
                     .sameSite("Lax")
                     .path("/")
                     .maxAge(60L * 60 * 24 * 30) // 30일
                     .build();
-        } else {
-            // 운영(https)용: SameSite=None + Secure=true + Domain 설정
-            refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
-                    .httpOnly(true)
-                    .secure(true)
-                    .sameSite("None")
-                    .domain(".devicelife.site")
-                    .path("/")
-                    .maxAge(60L * 60 * 24 * 30) // 30일
-                    .build();
         }
 
-        response.sendRedirect(target);
+        // 운영(https)용
+        return ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .domain(".devicelife.site")
+                .path("/")
+                .maxAge(60L * 60 * 24 * 30) // 30일
+                .build();
     }
 
     private String resolveTarget(String redirectUri) {
-        // 기본값: 운영 프론트
         String defaultTarget = "https://devicelife.site/auth/callback/google";
 
         if (redirectUri == null || redirectUri.isBlank()) {
             return defaultTarget;
         }
 
-        // 허용된 프론트만 리다이렉트
         if (redirectUri.startsWith("https://devicelife.site")
-                || redirectUri.startsWith("http://localhost:5173")) {
+                || redirectUri.startsWith("http://localhost:5173")
+                || redirectUri.startsWith("http://127.0.0.1:5173")) {
             return redirectUri;
         }
 
