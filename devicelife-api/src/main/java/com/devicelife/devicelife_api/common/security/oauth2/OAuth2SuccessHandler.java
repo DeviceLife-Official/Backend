@@ -57,57 +57,52 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                         .user(user)
                 .build());
 
-        // refreshToken을 HttpOnly 쿠키로 내려주기
-        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
-                //.secure(false)
-                //.sameSite("Lax")
-                .path("/")
-                .domain(".devicelife.site")
-                .maxAge(60L * 60 * 24 * 30) // 30일
-                .build();
-        response.addHeader(SET_COOKIE, refreshCookie.toString());
-
         String redirectUri = request.getParameter("redirect_uri");
         String target = resolveTarget(redirectUri);
 
-        /*
-        String code;
-        String message;
-        switch (result) {
-            case EXISTING_SOCIAL -> { code = USER_2002.getCode(); message = USER_2002.getMessage(); }
-            case LINKED_GENERAL  -> { code = USER_2005.getCode(); message = USER_2005.getMessage(); }
-            case NEW_SIGNUP      -> { code = USER_2001.getCode(); message = USER_2001.getMessage(); }
-            default              -> { code = USER_2002.getCode(); message = USER_2002.getMessage(); }
+        // 로컬 여부 판단(redirect_uri 기준)
+        boolean isLocal = target.startsWith("http://localhost:5173");
+
+        ResponseCookie refreshCookie;
+        if (isLocal) {
+            // 로컬(http) 개발용: SameSite=Lax + Secure=false + Domain 미설정
+            refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+                    .httpOnly(true)
+                    .secure(false)
+                    .sameSite("Lax")
+                    .path("/")
+                    .maxAge(60L * 60 * 24 * 30) // 30일
+                    .build();
+        } else {
+            // 운영(https)용: SameSite=None + Secure=true + Domain 설정
+            refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("None")
+                    .domain(".devicelife.site")
+                    .path("/")
+                    .maxAge(60L * 60 * 24 * 30) // 30일
+                    .build();
         }
 
-        // 토큰은 절대 URL에 싣지 말고, ok/code 정도만 보내기
-        String location = UriComponentsBuilder.fromUriString(target)
-                .queryParam("code", code)
-                .queryParam("message", message)
-                .build(true)
-                .toUriString();*/
-
-        //response.setStatus(HttpServletResponse.SC_FOUND); // 302
-        //response.setHeader("Location", location);
         response.sendRedirect(target);
     }
 
     private String resolveTarget(String redirectUri) {
-        // 안전장치: 허용된 프론트만 리다이렉트 가능하게
+        // 기본값: 운영 프론트
+        String defaultTarget = "https://devicelife.site/auth/callback/google";
+
         if (redirectUri == null || redirectUri.isBlank()) {
-            return "https://devicelife.site/auth/callback/google";
+            return defaultTarget;
         }
 
-        // 허용 목록
+        // 허용된 프론트만 리다이렉트
         if (redirectUri.startsWith("https://devicelife.site")
                 || redirectUri.startsWith("http://localhost:5173")) {
             return redirectUri;
         }
 
-        return "https://devicelife.site/auth/callback/google";
+        return defaultTarget;
     }
 
 }
