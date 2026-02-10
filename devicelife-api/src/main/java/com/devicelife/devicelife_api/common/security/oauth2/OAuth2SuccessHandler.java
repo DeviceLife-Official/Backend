@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
@@ -30,6 +31,7 @@ import java.net.URI;
 import static com.devicelife.devicelife_api.common.response.SuccessCode.*;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
@@ -68,9 +70,13 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         }
         String target = resolveTarget(redirectUri);
 
-        boolean isLocal = isLocalTarget(target);
+        boolean isLocal = true;//isLocalTarget(target);
 
         ResponseCookie refreshCookie = buildRefreshCookie(refreshToken, isLocal);
+
+        log.info("[OAuth2Success] redirectUri(raw)={}", redirectUri);
+        log.info("[OAuth2Success] target(resolved)={}", target);
+        log.info("[OAuth2Success] isLocalTarget={}", isLocal);
 
         response.addHeader(SET_COOKIE, refreshCookie.toString());
         response.sendRedirect(target);
@@ -114,7 +120,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     }
 
     private String resolveTarget(String redirectUri) {
-        String defaultTarget = "https://devicelife.site/auth/callback/google";
+        String defaultTarget = "http://localhost:5173/auth/callback/google";//"https://devicelife.site/auth/callback/google";
 
         if (redirectUri == null || redirectUri.isBlank()) {
             return defaultTarget;
