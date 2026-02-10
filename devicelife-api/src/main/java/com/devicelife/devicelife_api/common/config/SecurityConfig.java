@@ -39,8 +39,6 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
     private final OAuth2UserProviderRouter oAuth2UserProviderRouter;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
-    private final ClientRegistrationRepository clientRegistrationRepository;
 
     @Value("${INTERNAL_API_TOKEN}")
     private String internalApiToken;
@@ -51,7 +49,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            OAuth2SuccessHandler oAuth2SuccessHandler,
+            ClientRegistrationRepository clientRegistrationRepository
+    ) throws Exception {
 
         DefaultOAuth2AuthorizationRequestResolver defaultResolver =
                 new DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository, "/oauth2/authorization");
