@@ -55,12 +55,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         // refreshToken을 HttpOnly 쿠키로 내려주기
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                //.secure(true)
-                //.sameSite("None")
-                .secure(false)
-                .sameSite("Lax")
+                .secure(true)
+                .sameSite("None")
+                //.secure(false)
+                //.sameSite("Lax")
                 .path("/")
-                //.domain(".devicelife.site")
+                .domain(".devicelife.site")
                 .maxAge(60L * 60 * 24 * 30) // 30일
                 .build();
         response.addHeader(SET_COOKIE, refreshCookie.toString());
@@ -73,7 +73,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private String resolveTarget(String redirectUri) {
         // 안전장치: 허용된 프론트만 리다이렉트 가능하게
         if (redirectUri == null || redirectUri.isBlank()) {
-            return "http://localhost:5173/auth/callback/google";//"https://devicelife.site/auth/callback/google";
+            return "https://devicelife.site/auth/callback/google";
         }
 
         // 허용 목록
@@ -82,7 +82,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             return redirectUri;
         }
 
-        return "http://localhost:5173/auth/callback/google";// "https://devicelife.site/auth/callback/google";
+        return "https://devicelife.site/auth/callback/google";
     }
 
 }
