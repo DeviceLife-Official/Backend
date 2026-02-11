@@ -99,7 +99,7 @@ public class AuthController {
             )
     })
     @PostMapping("/login")
-    @Operation(summary = "로그인 API", description = "아이디(이메일), 비밀번호 입력, 리프레시토큰은 쿠키 전달 방식으로 수정하였으므로 body에는 null로 설정")
+    @Operation(summary = "로그인 API", description = "아이디(이메일), 비밀번호 입력, 리프레시토큰은 쿠키 전달 방식으로 수정하였으므로 body에는 null로 설정, keepLogin은 로그인 유지 여부")
     public ApiResponse<AuthDto.loginResDto> login(@RequestBody @Valid AuthDto.loginReqDto dto,
                                                   HttpServletResponse response) {
 
@@ -107,16 +107,22 @@ public class AuthController {
 
         String refreshToken = loginDto.getRefreshToken();
 
-        ResponseCookie rc = ResponseCookie.from("refreshToken", refreshToken)
+        ResponseCookie.ResponseCookieBuilder cookieBuilder = ResponseCookie
+                .from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
                 //.secure(false)
                 //.sameSite("Lax")
-                .path("/")
-                .maxAge(60 * 60 * 24 * 14)
-                .build();
+                .path("/");
 
+        // keepLogin=true → 영속 쿠키(Max-Age/Expires 포함)
+        // keepLogin=false → 세션 쿠키(Max-Age/Expires 없음)
+        if (Boolean.TRUE.equals(dto.getKeepLogin())) {
+            cookieBuilder.maxAge(60L * 60 * 24 * 30); // 30일 (원하면 14일로 변경)
+        }
+
+        ResponseCookie rc = cookieBuilder.build();
         response.addHeader(HttpHeaders.SET_COOKIE, rc.toString());
         response.addHeader("X-Debug-Cookie", "added");
 
