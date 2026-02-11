@@ -1,4 +1,4 @@
-package com.devicelife.devicelife_api.common.security.oauth2;
+/*package com.devicelife.devicelife_api.common.security.oauth2;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -42,4 +42,4 @@ public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRe
                 .additionalParameters(additional)
                 .build();
     }
-}
+}*/

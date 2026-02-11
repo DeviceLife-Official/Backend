@@ -3,7 +3,6 @@ package com.devicelife.devicelife_api.common.config;
 import com.devicelife.devicelife_api.common.security.InternalTokenAuthFilter;
 import com.devicelife.devicelife_api.common.security.JwtAuthFilter;
 import com.devicelife.devicelife_api.common.security.JwtUtil;
-import com.devicelife.devicelife_api.common.security.oauth2.CustomAuthorizationRequestResolver;
 import com.devicelife.devicelife_api.common.security.oauth2.OAuth2SuccessHandler;
 import com.devicelife.devicelife_api.common.security.oauth2.OAuth2UserProviderRouter;
 import com.devicelife.devicelife_api.service.auth.CustomUserDetailsService;
@@ -18,11 +17,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
-import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
-import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
-import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -39,31 +33,17 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
     private final OAuth2UserProviderRouter oAuth2UserProviderRouter;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Value("${INTERNAL_API_TOKEN}")
     private String internalApiToken;
 
     @Bean
-    public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
-        return new HttpSessionOAuth2AuthorizationRequestRepository();
-    }
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http,
-            OAuth2SuccessHandler oAuth2SuccessHandler,
-            ClientRegistrationRepository clientRegistrationRepository
-    ) throws Exception {
-
-        DefaultOAuth2AuthorizationRequestResolver defaultResolver =
-                new DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository, "/oauth2/authorization");
-        CustomAuthorizationRequestResolver customResolver =
-                new CustomAuthorizationRequestResolver(defaultResolver);
-
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin((auth) -> auth.disable())
                 .httpBasic((auth) -> auth.disable())
                 .addFilterBefore(internalTokenAuthFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -80,11 +60,11 @@ public class SecurityConfig {
                                 "/api/onboarding/**",
                                 "/api/mypage/**",
                                 "/api/recently-viewed/**"
-                                ).authenticated()
+                        ).authenticated()
                         .requestMatchers("/internal/**").hasRole("INTERNAL")
                         //.requestMatchers("/internal/**").permitAll()
                         //.access(new WebExpressionAuthorizationManager(
-                                //"hasIpAddress('100.64.0.0/10') or hasIpAddress('127.0.0.1') or hasIpAddress('::1')"
+                        //"hasIpAddress('100.64.0.0/10') or hasIpAddress('127.0.0.1') or hasIpAddress('::1')"
                         //))
                         .anyRequest().permitAll()
                 )
@@ -105,10 +85,6 @@ public class SecurityConfig {
                         }))
 
                 .oauth2Login(oauth2 -> oauth2
-                        .authorizationEndpoint(auth -> auth
-                                .authorizationRequestRepository(authorizationRequestRepository())
-                                .authorizationRequestResolver(customResolver)
-                        )
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(oAuth2UserProviderRouter) // 사용자 정보 받아오기
                         )
