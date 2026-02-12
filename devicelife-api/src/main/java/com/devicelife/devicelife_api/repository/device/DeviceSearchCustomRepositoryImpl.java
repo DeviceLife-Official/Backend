@@ -255,6 +255,7 @@ public class DeviceSearchCustomRepositoryImpl implements DeviceSearchCustomRepos
             addIfNotNull(specs, "cpu", row.get("cpu"));
             addIfNotNull(specs, "gpu", row.get("gpu"));
             addIfNotNull(specs, "minRequiredPowerW", row.get("minRequiredPowerW"));
+            addIfNotNull(specs, "chargingMethod", row.get("chargingMethod"));
             addIfNotNull(specs, "ramGb", row.get("ramGb"));
             addIfNotNull(specs, "storageGb", row.get("storageGb"));
             addIfNotNull(specs, "screenInch", row.get("screenInch"));
