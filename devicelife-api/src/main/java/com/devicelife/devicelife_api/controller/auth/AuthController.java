@@ -114,7 +114,8 @@ public class AuthController {
                 .sameSite("None")
                 //.secure(false)
                 //.sameSite("Lax")
-                .path("/");
+                .path("/")
+                .domain(".devicelife.site");
 
         // keepLogin=true → 영속 쿠키(Max-Age/Expires 포함)
         // keepLogin=false → 세션 쿠키(Max-Age/Expires 없음)
@@ -197,6 +198,7 @@ public class AuthController {
                 //.secure(false)
                 //.sameSite("Lax")
                 .path("/")
+                .domain(".devicelife.site")
                 .maxAge(0)
                 .build();
 
