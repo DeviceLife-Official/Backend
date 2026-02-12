@@ -60,20 +60,21 @@ public interface DeviceControllerDocs {
             기기의 상세 정보를 조회합니다.
             모달이 열릴 때 이 API를 호출하여 기기 정보를 표시합니다.
             
-            **로그인한 유저의 경우**, 이 API를 호출하면 자동으로 최근 본 기기 테이블에 저장됩니다.
+            로그인한 유저의 경우, 이 API를 호출하면 자동으로 최근 본 기기 테이블에 저장됩니다.
             비로그인 상태에서도 기기 정보 조회는 가능하지만, 최근 본 기기에는 저장되지 않습니다.
             
-            **반환 정보:**
+            반환 정보:
             - 모델명
             - 가격
             - 카테고리
             - 브랜드
-            - 색상
+            - 무게 (노트북: kg, 나머지: g / Smartphone·Smartwatch는 null)
             - 연결 단자 (기기 타입별로 다름)
             - 출시일
             - 태그 (현재는 빈 배열)
             
-            **빈 값 처리:** 값이 없는 필드는 빈 문자열("")로 반환됩니다.
+            빈 값 처리: 값이 없는 필드는 빈 문자열("")로 반환됩니다.
+            무게 필드는 데이터가 없으면 응답에서 제외됩니다 (null → JSON 미포함).
             """)
     @SecurityRequirement(name = "JWT TOKEN")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = DeviceDetailResponseDto.class)))

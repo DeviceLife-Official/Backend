@@ -175,6 +175,9 @@ public class DeviceQueryService {
         // 포트 정보 추출 (기기 타입별로 다름)
         DeviceDetailResponseDto.PortInfo portInfo = extractPortInfo(device);
 
+        // 무게 정보 추출 (노트북: kg, 나머지: g)
+        String weight = extractWeight(device);
+
         // 브랜드명 안전하게 추출
         String brandName = "";
         if (device.getBrand() != null && device.getBrand().getBrandName() != null) {
@@ -198,9 +201,34 @@ public class DeviceQueryService {
                 .priceKrw(priceKrw)
                 .releaseDate(device.getReleaseDate())
                 .imageUrl(device.getImageUrl() != null && !device.getImageUrl().isEmpty() ? device.getImageUrl() : "")
+                .weight(weight)
                 .portInfo(portInfo)
                 .tags(Collections.emptyList()) // 태그는 빈 배열로 반환 (PM 요청)
                 .build();
+    }
+
+    /**
+     * 기기 타입별 무게 정보 추출
+     * 노트북: kg 단위, 나머지: g 단위
+     * Smartphone, Smartwatch는 무게 데이터 없음 → null 반환
+     */
+    private String extractWeight(Device device) {
+        if (device instanceof Laptop laptop) {
+            return laptop.getWeightKg() != null
+                    ? laptop.getWeightKg().stripTrailingZeros().toPlainString() + " kg" : null;
+        } else if (device instanceof Tablet tablet) {
+            return tablet.getWeightGram() != null ? tablet.getWeightGram() + " g" : null;
+        } else if (device instanceof Audio audio) {
+            return audio.getWeightGram() != null ? audio.getWeightGram() + " g" : null;
+        } else if (device instanceof Keyboard keyboard) {
+            return keyboard.getWeightGram() != null ? keyboard.getWeightGram() + " g" : null;
+        } else if (device instanceof Mouse mouse) {
+            return mouse.getWeightGram() != null ? mouse.getWeightGram() + " g" : null;
+        } else if (device instanceof Charger charger) {
+            return charger.getWeightGram() != null ? charger.getWeightGram() + " g" : null;
+        }
+        // Smartphone, Smartwatch는 무게 필드 없음
+        return null;
     }
 
     /**

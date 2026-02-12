@@ -75,6 +75,7 @@ public enum SuccessCode {
 
     // Recently Viewed Device
     RECENTLY_VIEWED_GET_SUCCESS("RECENTLY_VIEWED_2001", "최근 본 기기 조회에 성공했습니다."),
+    RECENTLY_VIEWED_RECORD_SUCCESS("RECENTLY_VIEWED_2002", "최근 본 기기 기록에 성공했습니다."),
     ;
 
     private final String code;
