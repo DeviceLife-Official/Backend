@@ -2,6 +2,8 @@
 > 최적의 기기조합 웹 서비스
 > UMC 9th Project - Server Repository
 
+![KakaoTalk_20260212_224313434](https://github.com/user-attachments/assets/2deaa37b-9ce5-4c96-9201-beccaff84793)
+
 ## 📖 프로젝트 소개 (Project Overview)
 이 저장소는 Device Life의 API 서버 및 데이터베이스를 관리합니다. 기기 데이터 관리, 조합 저장 로직, 그리고 핵심 기능인 '실시간 호환성 평가 알고리즘' 처리를 담당합니다.
 
